@@ -1,66 +1,72 @@
 # SnapMemories
 
-Save all your Snapchat Memories to your computer — with capture dates, GPS coordinates, and overlays merged automatically.
+**Save all your Snapchat Memories to your computer** — with capture dates, GPS, and overlays merged automatically.
+
+[![Download](https://img.shields.io/github/v/release/qyrn/snapmemories?label=Download&style=for-the-badge&color=FFFC00&labelColor=000000)](https://github.com/qyrn/snapmemories/releases/latest)
+![Platform](https://img.shields.io/badge/platform-Windows-blue?style=for-the-badge&labelColor=000000)
+![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge&labelColor=000000)
 
 ---
 
-## Users
+## Download
 
-Double-click **`SnapMemories.exe`**. The app opens in your browser. Follow the on-screen steps.
+**→ [Download SnapMemories.exe](https://github.com/qyrn/snapmemories/releases/latest)**
 
-> Snapchat download links expire after **7 days**. Run the app as soon as you receive the Snapchat confirmation email.
+Windows only. No installation required — just double-click and go.
 
 ---
 
-## Developers
+## Features
 
-### Requirements
+- Downloads all your Snapchat photos and videos in one click
+- Embeds original capture date and GPS into each photo (EXIF)
+- Merges text overlays and stickers onto images automatically
+- Organizes files by year and month (`~/Memories/YYYY/Month YYYY/`)
+- Built-in viewer to browse your saved memories
+- 10 concurrent downloads — handles thousands of files
+- 100% local — no account, no server, no tracking
 
-- Python 3.9+
-- pip
+---
 
-### Run locally
+## How to use
+
+**Step 1 — Export your Snapchat data**
+
+Go to [accounts.snapchat.com/accounts/downloadmydata](https://accounts.snapchat.com/accounts/downloadmydata), check *Export your Memories*, select JSON format, and submit. You'll receive an email when the export is ready (a few minutes to a few hours).
+
+**Step 2 — Run SnapMemories**
+
+Double-click `SnapMemories.exe`. The app opens in your browser automatically.
+
+**Step 3 — Drop the ZIP and start**
+
+Drop the ZIP from Snapchat, click Start, and let it run.
+
+> **Note:** Snapchat download links expire after **7 days**. Run SnapMemories as soon as you receive the confirmation email.
+
+---
+
+## For developers
+
+### Run from source
 
 ```bash
 pip install -r requirements.txt
 python app.py
 ```
 
-Then open [http://localhost:7842](http://localhost:7842) in your browser.
+Then open [http://localhost:7842](http://localhost:7842).
 
-### Build the .exe
+### Build the exe
 
 ```bash
 build.bat
 ```
 
-The executable `SnapMemories.exe` is output directly to the project root.
+Requires PyInstaller. Outputs `SnapMemories.exe` to the project root.
 
 ---
 
-## What it does
+## Privacy
 
-1. You drop the ZIP exported from Snapchat
-2. The app reads your list of memories (photos and videos)
-3. It downloads each file directly from Snapchat's servers
-4. Capture dates and GPS coordinates are embedded into each photo (EXIF)
-5. Overlays (text, stickers) are composited onto the images
-6. Everything is organized in `~/Memories/` by year and month
-
-**No data ever leaves your computer.** The app only communicates with Snapchat's servers to retrieve your own files.
-
----
-
-## Project structure
-
-```
-├── app.py              # Flask server + all processing logic
-├── templates/
-│   ├── index.html      # Main interface
-│   └── viewer.html     # Memories viewer
-├── static/
-│   └── favicon.ico / favicon.png
-├── requirements.txt
-├── build.bat           # PyInstaller build script
-└── README.md
-```
+SnapMemories runs entirely on your machine. It only contacts Snapchat's servers to download your own files. No data is collected, transmitted, or stored anywhere other than your computer.
