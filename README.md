@@ -2,9 +2,9 @@
 
 **Save all your Snapchat Memories to your computer** — with capture dates, GPS, and overlays merged automatically.
 
-[![Download](https://img.shields.io/github/v/release/qyrn/snapmemories?label=Download&style=for-the-badge&color=FFFC00&labelColor=000000)](https://github.com/qyrn/snapmemories/releases/latest)
-![Platform](https://img.shields.io/badge/platform-Windows-blue?style=for-the-badge&labelColor=000000)
-![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge&labelColor=000000)
+[![Download](https://img.shields.io/badge/Download-v1.0.0-FFFC00?style=for-the-badge&labelColor=000000)](https://github.com/qyrn/snapmemories/releases/latest)
+![Platform](https://img.shields.io/badge/Platform-Windows-blue?style=for-the-badge&labelColor=000000)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge&labelColor=000000)
 
 ---
 
