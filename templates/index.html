@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SnapMemories</title>
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset ────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Tokens — Snapchat palette ───────────────────────────── */
+    :root {
+      --yellow:      #FFFC00;
+      --yellow-dim:  rgba(255,252,0,.12);
+      --yellow-glow: rgba(255,252,0,.25);
+      --black:       #000000;
+      --dark:        #111111;
+      --card:        #1A1A1A;
+      --card2:       #222222;
+      --card3:       #2A2A2A;
+      --border:      #2E2E2E;
+      --border2:     #3A3A3A;
+      --text:        #FFFFFF;
+      --text-dim:    #8E8E8E;
+      --text-faint:  #4A4A4A;
+      --green:       #00C878;
+      --red:         #FF4B4B;
+      --orange:      #FF9500;
+      --font:        'Nunito', system-ui, sans-serif;
+    }
+
+    /* ── Base ────────────────────────────────────────────────── */
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-height: 100vh;
+      background: var(--black);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 16px 80px;
+      overflow-x: hidden;
+    }
+
+    /* ── Privacy banner ──────────────────────────────────────── */
+    .privacy-banner {
+      width: 100%;
+      background: var(--dark);
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+      padding: 10px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dim);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      letter-spacing: .01em;
+    }
+    .privacy-banner span {
+      color: var(--green);
+      font-weight: 800;
+    }
+
+    /* ── Header ──────────────────────────────────────────────── */
+    .header {
+      margin-top: 44px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .ghost-wrap {
+      width: 72px;
+      height: 72px;
+      border-radius: 22px;
+    }
+
+    .ghost-wrap img {
+      width: 72px;
+      height: 72px;
+      border-radius: 22px;
+      object-fit: contain;
+      display: block;
+      box-shadow: 0 8px 32px rgba(255,252,0,.3);
+    }
+
+    .app-name {
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: -.5px;
+    }
+
+    .app-sub {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dim);
+      max-width: 300px;
+      line-height: 1.5;
+    }
+
+    /* ── Stepper ─────────────────────────────────────────────── */
+    .stepper {
+      display: flex;
+      align-items: flex-start;
+      width: 100%;
+      max-width: 580px;
+      margin: 40px 0 32px;
+      position: relative;
+    }
+
+    .step-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    /* Connector */
+    .step-item::after {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: calc(50% + 14px);
+      right: calc(-50% + 14px);
+      height: 2px;
+      background: var(--border2);
+      z-index: 0;
+      border-radius: 99px;
+    }
+    .step-item:last-child::after { display: none; }
+    .step-item.done::after { background: var(--yellow); }
+
+    .step-circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid var(--border2);
+      background: var(--card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-dim);
+      position: relative;
+      z-index: 1;
+      transition: all .25s ease;
+    }
+
+    .step-item.active .step-circle {
+      border-color: var(--yellow);
+      color: var(--yellow);
+      background: rgba(255,252,0,.08);
+      box-shadow: 0 0 0 4px rgba(255,252,0,.12);
+    }
+
+    .step-item.done .step-circle {
+      background: var(--yellow);
+      border-color: var(--yellow);
+      color: var(--black);
+      font-size: 13px;
+    }
+
+    .step-label {
+      margin-top: 8px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--text-faint);
+      text-align: center;
+    }
+    .step-item.active .step-label { color: var(--text-dim); }
+    .step-item.done  .step-label  { color: var(--text-dim); }
+
+    /* ── Card ────────────────────────────────────────────────── */
+    .card {
+      background: var(--card);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 580px;
+      overflow: hidden;
+    }
+
+    .card-inner {
+      padding: 32px 28px 36px;
+    }
+
+    .card-title {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--text);
+      margin-bottom: 6px;
+      letter-spacing: -.3px;
+    }
+
+    .card-subtitle {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dim);
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+
+    /* ── Guide ───────────────────────────────────────────────── */
+    .guide {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 32px;
+    }
+
+    .guide-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .guide-step:last-child { border-bottom: none; }
+
+    .guide-num {
+      flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--yellow);
+      color: var(--black);
+      font-size: 12px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+    }
+
+    .guide-text strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .guide-text em {
+      font-style: normal;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    .guide-url {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 8px;
+      background: var(--card2);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 5px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--yellow);
+      text-decoration: none;
+      transition: background .15s;
+    }
+    .guide-url:hover { background: var(--card3); }
+
+    /* ── Divider ─────────────────────────────────────────────── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 28px 0;
+    }
+
+    /* ── Drop zone ───────────────────────────────────────────── */
+    .dropzone {
+      border: 2px dashed var(--border2);
+      border-radius: 18px;
+      padding: 48px 24px;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      background: var(--card2);
+      transition: border-color .2s, background .2s;
+    }
+    .dropzone:hover,
+    .dropzone.dragover {
+      border-color: var(--yellow);
+      background: var(--yellow-dim);
+    }
+    .dropzone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .drop-ghost {
+      width: 52px;
+      height: 52px;
+      margin: 0 auto 14px;
+      opacity: .25;
+    }
+
+    .drop-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .drop-hint {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dim);
+    }
+
+    .drop-filename {
+      display: none;
+      margin-top: 14px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--yellow);
+    }
+
+    /* ── Summary ─────────────────────────────────────────────── */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 24px 0;
+    }
+
+    .summary-card {
+      background: var(--card2);
+      border-radius: 14px;
+      padding: 16px 12px;
+      text-align: center;
+    }
+
+    .summary-value {
+      display: block;
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--yellow);
+      line-height: 1;
+      letter-spacing: -.5px;
+    }
+
+    .summary-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-top: 6px;
+    }
+
+    /* ── Disk warning ────────────────────────────────────────── */
+    .disk-warning {
+      display: none;
+      background: rgba(255,149,0,.1);
+      border: 1px solid rgba(255,149,0,.4);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--orange);
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+    .disk-warning.visible { display: block; }
+
+    /* ── Upload error ────────────────────────────────────────── */
+    #upload-error {
+      display: none;
+      background: rgba(255,75,75,.1);
+      border: 1px solid rgba(255,75,75,.35);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--red);
+      margin-top: 14px;
+      line-height: 1.5;
+    }
+
+    /* ── Buttons ─────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 28px;
+      height: 50px;
+      border-radius: 999px;
+      font-family: var(--font);
+      font-size: 15px;
+      font-weight: 800;
+      white-space: nowrap;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform .12s ease, box-shadow .12s ease, opacity .12s;
+      letter-spacing: .01em;
+    }
+
+    .btn-primary {
+      background: var(--yellow);
+      color: var(--black);
+      box-shadow: 0 4px 20px var(--yellow-glow);
+    }
+    .btn-primary:hover:not(:disabled) {
+      transform: scale(1.03);
+      box-shadow: 0 6px 28px var(--yellow-glow);
+    }
+    .btn-primary:active:not(:disabled) { transform: scale(.97); }
+    .btn-primary:disabled {
+      background: var(--card3);
+      color: var(--text-faint);
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 2px solid var(--border2);
+    }
+    .btn-secondary:hover { border-color: var(--text-dim); }
+
+    .btn-danger {
+      background: transparent;
+      color: var(--red);
+      border: 2px solid rgba(255,75,75,.4);
+    }
+    .btn-danger:hover { background: rgba(255,75,75,.08); }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    /* ── Story-style progress bar (screen 2) ─────────────────── */
+    .story-bar {
+      height: 3px;
+      background: var(--card3);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 32px;
+    }
+
+    .story-bar-fill {
+      height: 100%;
+      background: var(--yellow);
+      border-radius: 99px;
+      width: 0%;
+      transition: width .5s ease;
+    }
+
+    /* ── Progress section ────────────────────────────────────── */
+    .progress-wrap { margin: 0 0 24px; }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 12px;
+    }
+
+    .progress-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-dim);
+    }
+
+    .progress-pct {
+      font-size: 42px;
+      font-weight: 900;
+      color: var(--yellow);
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+
+    /* ── Stats ───────────────────────────────────────────────── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 0;
+    }
+
+    .stat-pill {
+      background: var(--card2);
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .stat-pill span {
+      display: block;
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: -.3px;
+      margin-top: 4px;
+      text-transform: none;
+    }
+
+    .current-file {
+      margin-top: 16px;
+      background: var(--card2);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dim);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .current-file span { color: var(--text); }
+
+    /* ── Error section ───────────────────────────────────────── */
+    .error-section { display: none; margin-top: 20px; }
+    .error-section.visible { display: block; }
+
+    .error-title {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--orange);
+      margin-bottom: 8px;
+    }
+
+    .error-list {
+      max-height: 140px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .error-item {
+      background: rgba(255,75,75,.08);
+      border: 1px solid rgba(255,75,75,.2);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--red);
+    }
+
+    /* ── Expired banner ──────────────────────────────────────── */
+    .expired-banner {
+      display: none;
+      background: rgba(255,149,0,.1);
+      border: 1px solid rgba(255,149,0,.35);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-top: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+    .expired-banner.visible { display: block; }
+    .expired-banner strong { color: var(--orange); font-weight: 800; }
+    .expired-banner a { color: var(--yellow); font-weight: 700; text-decoration: none; }
+    .expired-banner a:hover { text-decoration: underline; }
+
+    /* ── Done screen ─────────────────────────────────────────── */
+    .done-hero {
+      text-align: center;
+      padding: 12px 0 32px;
+    }
+
+    .done-badge {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--yellow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      box-shadow: 0 8px 32px var(--yellow-glow);
+    }
+
+    .done-badge svg {
+      width: 40px;
+      height: 40px;
+      color: var(--black);
+    }
+
+    .done-title {
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--text);
+      margin-bottom: 6px;
+      letter-spacing: -.3px;
+    }
+
+    .done-subtitle {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dim);
+    }
+
+    .done-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 24px 0;
+    }
+
+    .done-stat {
+      background: var(--card2);
+      border-radius: 16px;
+      padding: 20px 12px;
+      text-align: center;
+    }
+
+    .done-stat-value {
+      font-size: 38px;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -1px;
+      display: block;
+    }
+    .done-stat-value.green  { color: var(--green); }
+    .done-stat-value.red    { color: var(--red); }
+    .done-stat-value.yellow { color: var(--yellow); }
+
+    .done-stat-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--text-dim);
+      margin-top: 6px;
+    }
+
+    .output-path {
+      background: var(--card2);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dim);
+      margin-bottom: 20px;
+      overflow-wrap: break-word;
+      word-break: break-all;
+    }
+
+    .output-path-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text-faint);
+      margin-bottom: 6px;
+    }
+
+    /* ── Screen visibility ───────────────────────────────────── */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Spinner ─────────────────────────────────────────────── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(0,0,0,.2);
+      border-top-color: #000;
+      border-radius: 50%;
+      animation: spin .65s linear infinite;
+      flex-shrink: 0;
+    }
+
+    /* ── Viewer link (screen 1) ──────────────────────────────── */
+    .viewer-link {
+      display: block;
+      margin-top: 14px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .viewer-link:hover { color: var(--text); }
+
+    /* ── Footer ──────────────────────────────────────────────── */
+    .site-footer {
+      margin-top: 48px;
+      width: 100%;
+      max-width: 580px;
+      text-align: center;
+      color: var(--text-faint);
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 2;
+    }
+    .footer-link {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-weight: 700;
+      transition: color .15s;
+    }
+    .footer-link:hover { color: var(--text); }
+
+    /* ── Responsive ──────────────────────────────────────────── */
+    @media (max-width: 520px) {
+      body { padding: 0 12px 60px; }
+      .card-inner { padding: 20px 16px 24px; }
+      .summary-grid { grid-template-columns: 1fr 1fr; }
+      .done-stats { grid-template-columns: 1fr 1fr; }
+      .progress-pct { font-size: 32px; }
+      .header { margin-top: 28px; }
+      .stepper { margin: 24px 0 18px; }
+      .step-label { font-size: 9px; }
+      .app-name { font-size: 24px; }
+      .guide-step { padding: 12px 0; }
+    }
+
+    @media (max-width: 380px) {
+      .stats-row { grid-template-columns: 1fr; }
+      .done-stats { grid-template-columns: 1fr; }
+      .btn-row { flex-direction: column; align-items: stretch; }
+      .btn { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Privacy banner ─────────────────────────────────────────── -->
+<div class="privacy-banner">
+  <span>100&nbsp;% local</span>
+  &nbsp;— Your files never leave your computer
+</div>
+
+<!-- ── Header ─────────────────────────────────────────────────── -->
+<div class="header">
+  <div class="ghost-wrap">
+    <img src="{{ url_for('static', filename='favicon.png') }}" alt="SnapMemories" />
+  </div>
+  <div class="app-name">SnapMemories</div>
+  <div class="app-sub">Save your memories before they're gone</div>
+</div>
+
+<!-- ── Stepper ────────────────────────────────────────────────── -->
+<div class="stepper" id="stepper">
+  <div class="step-item active" id="s1">
+    <div class="step-circle">1</div>
+    <div class="step-label">Export</div>
+  </div>
+  <div class="step-item" id="s2">
+    <div class="step-circle">2</div>
+    <div class="step-label">Import</div>
+  </div>
+  <div class="step-item" id="s3">
+    <div class="step-circle">3</div>
+    <div class="step-label">Processing</div>
+  </div>
+  <div class="step-item" id="s4">
+    <div class="step-circle">&#10003;</div>
+    <div class="step-label">Done</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  SCREEN 1                                                    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="card screen active" id="screen-1">
+  <div class="card-inner">
+
+    <div class="card-title">Get your archive</div>
+    <div class="card-subtitle">Follow these steps to export your Snapchat data (2–3 min).</div>
+
+    <div class="guide">
+      <div class="guide-step">
+        <div class="guide-num">1</div>
+        <div class="guide-text">
+          <strong>Open the Snapchat download page</strong>
+          <em>Sign in with your Snapchat account if needed.</em>
+          <a class="guide-url" href="https://accounts.snapchat.com/accounts/downloadmydata" target="_blank">
+            &#8599; accounts.snapchat.com
+          </a>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-num">2</div>
+        <div class="guide-text">
+          <strong>Check "Export your Memories" and choose JSON</strong>
+          <em>Important: JSON format (not HTML). Select "All data".</em>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-num">3</div>
+        <div class="guide-text">
+          <strong>Click "Submit" and confirm your email</strong>
+          <em>You'll receive a "Your Snapchat data is ready" email — a few minutes to a few hours.</em>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-num">4</div>
+        <div class="guide-text">
+          <strong>In the email: "See exports" → "Download"</strong>
+          <em>Download the ZIP file. Do not extract it.</em>
+        </div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-num">5</div>
+        <div class="guide-text">
+          <strong>Drop the .zip below</strong>
+          <em>Links expire after 7 days — act fast!</em>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="card-title" style="margin-bottom:6px">Drop your file</div>
+    <div class="card-subtitle">Drag your Snapchat archive directly here.</div>
+
+    <div class="dropzone" id="dropzone">
+      <input type="file" id="file-input" accept=".zip" />
+      <div class="drop-ghost">
+        <svg viewBox="0 0 100 112" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M50 4C28 4 15 21 15 42v32l-9 10c-3 9 9 8 22 1 4 14 14 23 22 23s18-9 22-23c13 7 25 8 22-1l-9-10V42C85 21 72 4 50 4z" fill="white"/>
+        </svg>
+      </div>
+      <div class="drop-title">Drop the ZIP file here</div>
+      <div class="drop-hint">or click to browse</div>
+      <div class="drop-filename" id="drop-filename"></div>
+    </div>
+
+    <div class="disk-warning" id="disk-warning"></div>
+
+    <div id="summary-section" style="display:none">
+      <div class="summary-grid">
+        <div class="summary-card">
+          <span class="summary-value" id="s-photos">—</span>
+          <div class="summary-label">Photos</div>
+        </div>
+        <div class="summary-card">
+          <span class="summary-value" id="s-videos">—</span>
+          <div class="summary-label">Videos</div>
+        </div>
+        <div class="summary-card">
+          <span class="summary-value" id="s-size">—</span>
+          <div class="summary-label">Est. size</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="upload-error"></div>
+
+    <div class="btn-row" style="justify-content:center">
+      <button class="btn btn-primary" id="btn-start" disabled>
+        Start
+      </button>
+      <a class="btn btn-secondary" href="/viewer" target="_blank" rel="noopener">
+        My memories
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<!-- Hidden film-bottom stubs (used by JS) -->
+<div id="fb2" style="display:none"></div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  SCREEN 2                                                    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="card screen" id="screen-2">
+  <div class="card-inner">
+
+    <div class="card-title">Downloading…</div>
+    <div class="card-subtitle" id="prog-subtitle">Fetching your memories from Snapchat.</div>
+
+    <div class="progress-wrap">
+      <div class="progress-header">
+        <span class="progress-label" id="prog-label">Initializing…</span>
+        <span class="progress-pct" id="prog-pct">0%</span>
+      </div>
+      <div class="story-bar">
+        <div class="story-bar-fill" id="prog-bar"></div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-pill">
+        Downloaded
+        <span id="stat-ok">0</span>
+      </div>
+      <div class="stat-pill">
+        Failed
+        <span id="stat-fail">0</span>
+      </div>
+      <div class="stat-pill">
+        Speed
+        <span id="stat-speed">—</span>
+      </div>
+      <div class="stat-pill">
+        Remaining
+        <span id="stat-eta">—</span>
+      </div>
+    </div>
+
+    <div class="current-file" id="current-file">
+      In progress&nbsp;: <span id="current-file-name">—</span>
+    </div>
+
+    <div class="error-section" id="error-section">
+      <div class="error-title">Errors</div>
+      <div class="error-list" id="error-list"></div>
+    </div>
+
+    <div class="expired-banner" id="expired-banner">
+      <strong>Some links have expired.</strong>
+      Snapchat links are only valid for 7 days. Request a new export at
+      <a href="https://accounts.snapchat.com" target="_blank">accounts.snapchat.com</a>.
+    </div>
+
+    <div class="btn-row" style="margin-top:28px;justify-content:center">
+      <button class="btn btn-danger" id="btn-cancel">Cancel</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Hidden film-bottom stubs (used by JS) -->
+<div id="fb3" style="display:none"></div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  SCREEN 3                                                    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="card screen" id="screen-3">
+  <div class="card-inner">
+
+    <div class="done-hero">
+      <div class="done-badge">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="done-title">Memories saved!</div>
+      <div class="done-subtitle">Everything is organized on your computer.</div>
+    </div>
+
+    <div class="done-stats">
+      <div class="done-stat">
+        <span class="done-stat-value green" id="done-ok">0</span>
+        <div class="done-stat-label">Saved</div>
+      </div>
+      <div class="done-stat">
+        <span class="done-stat-value red" id="done-fail">0</span>
+        <div class="done-stat-label">Failed</div>
+      </div>
+      <div class="done-stat">
+        <span class="done-stat-value yellow" id="done-size">—</span>
+        <div class="done-stat-label">Space used</div>
+      </div>
+    </div>
+
+    <div class="output-path-label">Output folder</div>
+    <div class="output-path" id="done-path">—</div>
+
+    <div class="error-section" id="done-error-section">
+      <div class="error-title">Failed downloads</div>
+      <div class="error-list" id="done-error-list"></div>
+    </div>
+
+    <div class="expired-banner" id="done-expired-banner">
+      <strong>Some links have expired.</strong>
+      Request a new export at
+      <a href="https://accounts.snapchat.com" target="_blank">accounts.snapchat.com</a>
+      then restart the app.
+    </div>
+
+    <div class="btn-row" style="justify-content:center;flex-wrap:nowrap">
+      <button class="btn btn-primary" id="btn-open-folder">
+        &#128193;&nbsp; Folder
+      </button>
+      <a class="btn btn-secondary" href="/viewer" target="_blank" rel="noopener">
+        &#128247;&nbsp; Viewer
+      </a>
+      <button class="btn btn-secondary" id="btn-restart">
+        Restart
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── Footer ─────────────────────────────────────────────────── -->
+<footer class="site-footer">
+  SnapMemories &mdash; Free and open source tool.<br>
+  Your data never leaves your computer.<br>
+  <a class="footer-link" href="https://github.com/qyrn/snapmemories" target="_blank" rel="noopener">Source code on GitHub</a>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  JavaScript                                                  -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+  "use strict";
+
+  let currentScreen = 1;
+  let fileSelected  = false;
+  let pollInterval  = null;
+  let summaryData   = null;
+
+  function showScreen(n) {
+    currentScreen = n;
+    document.querySelectorAll(".screen").forEach((el, i) => {
+      el.classList.toggle("active", i + 1 === n);
+    });
+    const fb2 = document.getElementById("fb2");
+    const fb3 = document.getElementById("fb3");
+    if (fb2) fb2.style.display = n === 2 ? "block" : "none";
+    if (fb3) fb3.style.display = n === 3 ? "block" : "none";
+    updateStepper(n);
+  }
+
+  function updateStepper(activeStep) {
+    for (let i = 1; i <= 4; i++) {
+      const el = document.getElementById("s" + i);
+      el.classList.remove("active", "done");
+      if (i < activeStep) el.classList.add("done");
+      else if (i === activeStep) el.classList.add("active");
+    }
+  }
+
+  function fmtBytes(bytes) {
+    if (bytes < 1024)       return bytes + " B";
+    if (bytes < 1048576)    return (bytes / 1024).toFixed(1) + " KB";
+    if (bytes < 1073741824) return (bytes / 1048576).toFixed(1) + " MB";
+    return (bytes / 1073741824).toFixed(2) + " GB";
+  }
+
+  function fmtSpeed(bps) { return fmtBytes(bps) + "/s"; }
+
+  function fmtEta(secs) {
+    if (!secs || secs <= 0) return "—";
+    if (secs < 60)   return secs + " s";
+    if (secs < 3600) return Math.ceil(secs / 60) + " min";
+    return (secs / 3600).toFixed(1) + " h";
+  }
+
+  const dropzone  = document.getElementById("dropzone");
+  const fileInput = document.getElementById("file-input");
+  const dropName  = document.getElementById("drop-filename");
+  const btnStart  = document.getElementById("btn-start");
+  const uploadErr = document.getElementById("upload-error");
+
+  dropzone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropzone.classList.add("dragover");
+  });
+  dropzone.addEventListener("dragleave", () => dropzone.classList.remove("dragover"));
+  dropzone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropzone.classList.remove("dragover");
+    const file = e.dataTransfer.files[0];
+    if (file) handleFileSelected(file);
+  });
+  fileInput.addEventListener("change", () => {
+    if (fileInput.files[0]) handleFileSelected(fileInput.files[0]);
+  });
+
+  function handleFileSelected(file) {
+    if (!file.name.toLowerCase().endsWith(".zip")) {
+      showUploadError("This file is not a .zip. Please select your Snapchat archive.");
+      return;
+    }
+    hideUploadError();
+    dropName.textContent = file.name + " (" + fmtBytes(file.size) + ")";
+    dropName.style.display = "block";
+    uploadZip(file);
+  }
+
+  function showUploadError(msg) {
+    uploadErr.textContent = msg;
+    uploadErr.style.display = "block";
+    document.getElementById("summary-section").style.display = "none";
+    btnStart.disabled = true;
+    fileSelected = false;
+  }
+
+  function hideUploadError() {
+    uploadErr.style.display = "none";
+  }
+
+  async function uploadZip(file) {
+    btnStart.disabled = true;
+    btnStart.innerHTML = '<div class="spinner"></div> Analyzing…';
+    const form = new FormData();
+    form.append("file", file);
+    try {
+      const resp = await fetch("/api/upload-zip", { method: "POST", body: form });
+      const data = await resp.json();
+      if (!resp.ok || data.error) {
+        showUploadError(data.error || "Unexpected error.");
+        btnStart.innerHTML = "Start";
+        return;
+      }
+      summaryData = data;
+      showSummary(data);
+      fileSelected = true;
+      btnStart.disabled = false;
+      btnStart.innerHTML = "Start";
+    } catch (err) {
+      showUploadError("Could not read the file. Please try again.");
+      btnStart.innerHTML = "Start";
+    }
+  }
+
+  function showSummary(data) {
+    document.getElementById("s-photos").textContent = data.photos.toLocaleString("en-US");
+    document.getElementById("s-videos").textContent = data.videos.toLocaleString("en-US");
+    document.getElementById("s-size").textContent   = fmtBytes(data.estimated_bytes);
+    document.getElementById("summary-section").style.display = "block";
+    const dw = document.getElementById("disk-warning");
+    if (!data.disk.ok && data.disk.free_bytes > 0) {
+      dw.textContent =
+        "Not enough disk space. Free: " + fmtBytes(data.disk.free_bytes) +
+        " \u2014 needed: " + fmtBytes(data.disk.needed_bytes) + ".";
+      dw.classList.add("visible");
+    } else {
+      dw.classList.remove("visible");
+    }
+  }
+
+  btnStart.addEventListener("click", async () => {
+    if (!fileSelected) return;
+    try {
+      const resp = await fetch("/api/start-download", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ workers: 10 }),
+      });
+      const data = await resp.json();
+      if (data.error) { showUploadError(data.error); return; }
+      showScreen(2);
+      updateStepper(3);
+      startPolling();
+    } catch (err) {
+      showUploadError("Could not start the download.");
+    }
+  });
+
+  function startPolling() { pollInterval = setInterval(fetchProgress, 1200); }
+  function stopPolling()  { clearInterval(pollInterval); pollInterval = null; }
+
+  async function fetchProgress() {
+    try {
+      const resp = await fetch("/api/progress");
+      const data = await resp.json();
+      updateProgressUI(data);
+      if (data.is_done) { stopPolling(); showDoneScreen(data); }
+    } catch (e) {}
+  }
+
+  function updateProgressUI(data) {
+    const total = data.total || 1;
+    const done  = data.downloaded + data.failed;
+    const pct   = Math.min(100, Math.round((done / total) * 100));
+
+    document.getElementById("prog-bar").style.width = pct + "%";
+    document.getElementById("prog-pct").textContent = pct + "%";
+    document.getElementById("prog-label").textContent = done + " / " + total + " files";
+    document.getElementById("stat-ok").textContent   = data.downloaded.toLocaleString("en-US");
+    document.getElementById("stat-fail").textContent  = data.failed.toLocaleString("en-US");
+    document.getElementById("stat-speed").textContent = fmtSpeed(data.speed_bps);
+    document.getElementById("stat-eta").textContent   = fmtEta(data.eta);
+    document.getElementById("current-file-name").textContent = data.current_file || "—";
+
+    if (data.errors && data.errors.length > 0) {
+      const sec  = document.getElementById("error-section");
+      const list = document.getElementById("error-list");
+      sec.classList.add("visible");
+      list.innerHTML = data.errors
+        .filter(e => !e.startsWith("EXPIRED_LINKS:"))
+        .slice(-20)
+        .map(e => `<div class="error-item">${escHtml(e)}</div>`)
+        .join("");
+    }
+
+    if (data.has_expired_links) {
+      document.getElementById("expired-banner").classList.add("visible");
+    }
+  }
+
+  document.getElementById("btn-cancel").addEventListener("click", async () => {
+    await fetch("/api/cancel", { method: "POST" });
+    stopPolling();
+    await fetch("/api/reset", { method: "POST" });
+    resetUI();
+    showScreen(1);
+  });
+
+  function showDoneScreen(data) {
+    document.getElementById("done-ok").textContent   = data.downloaded.toLocaleString("en-US");
+    document.getElementById("done-fail").textContent = data.failed.toLocaleString("en-US");
+    document.getElementById("done-path").textContent = data.output_dir;
+    document.getElementById("done-size").textContent = data.used_bytes > 0 ? fmtBytes(data.used_bytes) : "—";
+
+    if (data.errors && data.errors.length > 0) {
+      const realErrors = data.errors.filter(e => !e.startsWith("EXPIRED_LINKS:"));
+      if (realErrors.length > 0) {
+        document.getElementById("done-error-section").classList.add("visible");
+        document.getElementById("done-error-list").innerHTML = realErrors
+          .map(e => `<div class="error-item">${escHtml(e)}</div>`)
+          .join("");
+      }
+    }
+
+    if (data.has_expired_links) {
+      document.getElementById("done-expired-banner").classList.add("visible");
+    }
+
+    showScreen(3);
+    updateStepper(4);
+  }
+
+  document.getElementById("btn-open-folder").addEventListener("click", async () => {
+    await fetch("/api/open-folder", { method: "POST" });
+  });
+
+  document.getElementById("btn-restart").addEventListener("click", async () => {
+    await fetch("/api/reset", { method: "POST" });
+    resetUI();
+    showScreen(1);
+  });
+
+  function resetUI() {
+    fileSelected = false;
+    summaryData  = null;
+    fileInput.value = "";
+    dropName.style.display = "none";
+    dropName.textContent   = "";
+    hideUploadError();
+    btnStart.disabled = true;
+    btnStart.innerHTML = "Start";
+    document.getElementById("summary-section").style.display = "none";
+    document.getElementById("disk-warning").classList.remove("visible");
+    document.getElementById("prog-bar").style.width = "0%";
+    document.getElementById("prog-pct").textContent  = "0%";
+    document.getElementById("stat-ok").textContent   = "0";
+    document.getElementById("stat-fail").textContent = "0";
+    document.getElementById("current-file-name").textContent = "—";
+    document.getElementById("error-section").classList.remove("visible");
+    document.getElementById("error-list").innerHTML = "";
+    document.getElementById("expired-banner").classList.remove("visible");
+    document.getElementById("done-error-section").classList.remove("visible");
+    document.getElementById("done-error-list").innerHTML = "";
+    document.getElementById("done-expired-banner").classList.remove("visible");
+  }
+
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  showScreen(1);
+})();
+</script>
+</body>
+</html>

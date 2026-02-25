@@ -1,0 +1,5 @@
+flask>=3.0.0
+requests>=2.31.0
+pillow>=10.0.0
+piexif>=1.1.3
+pyinstaller>=6.0.0
