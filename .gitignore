@@ -14,8 +14,8 @@ build/
 dist/
 *.spec
 
-# Compiled executable at root
-SnapMemories.exe
+# Developer build script (keep locally, not in repo)
+build.bat
 
 # Claude workspace
 .claude/
