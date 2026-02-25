@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memories · SnapMemories</title>
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Tokens ──────────────────────────────────────────────── */
+    :root {
+      --yellow:      #FFFC00;
+      --yellow-glow: rgba(255,252,0,.22);
+      --yellow-dim:  rgba(255,252,0,.1);
+      --black:       #000000;
+      --dark:        #111111;
+      --card:        #1A1A1A;
+      --card2:       #222222;
+      --card3:       #2A2A2A;
+      --border:      #2E2E2E;
+      --text:        #FFFFFF;
+      --text-dim:    #8E8E8E;
+      --text-faint:  #4A4A4A;
+      --green:       #00C878;
+      --red:         #FF4B4B;
+      --font:        'Nunito', system-ui, sans-serif;
+      --navbar-h:    56px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: var(--black);
+      color: var(--text);
+      font-family: var(--font);
+      font-weight: 600;
+      overflow-x: hidden;
+    }
+
+    /* ── Navbar — exact Snapchat Memories bar ─────────────────── */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 300;
+      height: var(--navbar-h);
+      background: rgba(0,0,0,.9);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+    }
+
+    .nav-back {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 999px;
+      transition: background .15s, color .15s;
+    }
+    .nav-back:hover { background: var(--card); color: var(--text); }
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .nav-ghost {
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+      flex-shrink: 0;
+    }
+
+    .nav-ghost img {
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+      object-fit: contain;
+      display: block;
+      box-shadow: 0 4px 14px rgba(255,252,0,.3);
+    }
+
+    .nav-title {
+      font-size: 17px;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: -.2px;
+    }
+
+    .nav-stats {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+
+    /* ── Loading ─────────────────────────────────────────────── */
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - var(--navbar-h));
+      gap: 18px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--card2);
+      border-top-color: var(--yellow);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    .loading-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-dim);
+    }
+
+    /* ── Empty / error ───────────────────────────────────────── */
+    .state-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - var(--navbar-h));
+      gap: 12px;
+      padding: 32px;
+      text-align: center;
+    }
+
+    .state-ghost {
+      width: 80px;
+      height: 80px;
+      background: var(--card);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+      opacity: .4;
+    }
+
+    .state-ghost svg {
+      width: 48px;
+      height: 48px;
+      color: var(--text);
+    }
+
+    .state-title {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--text);
+    }
+
+    .state-sub {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dim);
+      max-width: 280px;
+      line-height: 1.6;
+    }
+
+    .btn-yellow {
+      margin-top: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 24px;
+      height: 46px;
+      border-radius: 999px;
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 800;
+      background: var(--yellow);
+      color: var(--black);
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 4px 18px var(--yellow-glow);
+      transition: transform .12s, box-shadow .12s;
+    }
+    .btn-yellow:hover { transform: scale(1.04); }
+
+    /* ── Gallery ─────────────────────────────────────────────── */
+    #gallery { padding-bottom: 60px; }
+
+    /* ── Month group ─────────────────────────────────────────── */
+    .month-group { margin-bottom: 0; }
+
+    .month-header {
+      position: sticky;
+      top: var(--navbar-h);
+      z-index: 200;
+      background: rgba(0,0,0,.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 10px 14px 9px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .month-name {
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: -.2px;
+    }
+
+    .month-count {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-dim);
+    }
+
+    /* ── Thumbnail grid — exact Snapchat layout ───────────────── */
+    .thumb-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+
+    @media (max-width: 480px) {
+      .thumb-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* ── Thumbnail ───────────────────────────────────────────── */
+    .thumb {
+      aspect-ratio: 1;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      background: var(--card);
+      display: block;
+    }
+
+    .thumb img,
+    .thumb video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .2s ease;
+      pointer-events: none;
+    }
+
+    .thumb:hover img,
+    .thumb:hover video { transform: scale(1.06); }
+
+    /* Dark overlay on hover */
+    .thumb::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0);
+      transition: background .2s;
+      pointer-events: none;
+    }
+    .thumb:hover::after { background: rgba(0,0,0,.2); }
+
+    /* Video badge — white pill like Snapchat */
+    .play-badge {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(6px);
+      border-radius: 999px;
+      padding: 3px 9px 3px 7px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      pointer-events: none;
+    }
+
+    /* GPS dot — yellow, Snapchat-style */
+    .gps-dot {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--yellow);
+      box-shadow: 0 0 6px var(--yellow-glow);
+      pointer-events: none;
+    }
+
+    /* ── Lightbox ────────────────────────────────────────────── */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease;
+    }
+    .lightbox.open { opacity: 1; pointer-events: all; }
+
+    /* Top bar */
+    .lb-topbar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      background: linear-gradient(to bottom, rgba(0,0,0,.7), transparent);
+      z-index: 10;
+    }
+
+    .lb-close {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.12);
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .15s;
+      line-height: 1;
+    }
+    .lb-close:hover { background: rgba(255,255,255,.22); }
+
+    .lb-counter-top {
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255,255,255,.7);
+    }
+
+    /* Nav arrows */
+    .lb-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.12);
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .15s;
+      z-index: 10;
+      user-select: none;
+    }
+    .lb-nav:hover { background: rgba(255,255,255,.22); }
+    .lb-prev { left: 12px; }
+    .lb-next { right: 12px; }
+    .lb-nav[hidden] { display: none; }
+
+    /* Media */
+    .lb-media-wrap {
+      max-width: min(100vw, 900px);
+      max-height: 75vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lb-media-wrap img,
+    .lb-media-wrap video {
+      max-width: 100%;
+      max-height: 75vh;
+      object-fit: contain;
+      display: block;
+      border-radius: 4px;
+    }
+
+    /* Bottom info bar */
+    .lb-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 24px 20px 28px;
+      background: linear-gradient(to top, rgba(0,0,0,.75), transparent);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      z-index: 10;
+    }
+
+    .lb-date {
+      font-size: 15px;
+      font-weight: 700;
+      color: rgba(255,255,255,.9);
+    }
+
+    .lb-map-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 18px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+      backdrop-filter: blur(8px);
+      font-size: 13px;
+      font-weight: 800;
+      color: #fff;
+      text-decoration: none;
+      transition: background .15s;
+      border: 1px solid rgba(255,255,255,.15);
+    }
+    .lb-map-link:hover { background: rgba(255,255,255,.22); }
+
+    /* ── Responsive ──────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .lb-nav { display: none; }
+      .lb-media-wrap { max-height: 65vh; }
+      .lb-media-wrap img, .lb-media-wrap video { max-height: 65vh; }
+      .lb-bottom { padding: 16px 16px 24px; }
+      .lb-date { font-size: 13px; }
+    }
+
+    @media (max-width: 480px) {
+      .nav-stats { font-size: 11px; }
+      .month-header { padding: 9px 10px 8px; }
+      .month-name { font-size: 14px; }
+    }
+
+    @media (max-width: 360px) {
+      .nav-stats { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navbar ──────────────────────────────────────────────────── -->
+<nav class="navbar">
+  <a href="/" class="nav-back">
+    &#8592; Back
+  </a>
+
+  <div class="nav-center">
+    <div class="nav-ghost">
+      <img src="{{ url_for('static', filename='favicon.png') }}" alt="SnapMemories" />
+    </div>
+    <span class="nav-title">Memories</span>
+  </div>
+
+  <div class="nav-stats" id="nav-stats"></div>
+</nav>
+
+<!-- ── Content ────────────────────────────────────────────────── -->
+<div id="loading" class="loading">
+  <div class="spinner"></div>
+  <div class="loading-label">Loading…</div>
+</div>
+
+<div id="gallery" style="display:none"></div>
+
+<!-- ── Lightbox ──────────────────────────────────────────────── -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true">
+
+  <div class="lb-topbar">
+    <button class="lb-close" id="lb-close" aria-label="Close">&#x2715;</button>
+    <span class="lb-counter-top" id="lb-counter"></span>
+    <div style="width:40px"></div>
+  </div>
+
+  <div class="lb-nav lb-prev" id="lb-prev" role="button" tabindex="0" aria-label="Previous">&#8249;</div>
+  <div class="lb-nav lb-next" id="lb-next" role="button" tabindex="0" aria-label="Next">&#8250;</div>
+
+  <div class="lb-media-wrap" id="lb-media"></div>
+
+  <div class="lb-bottom">
+    <div class="lb-date" id="lb-date"></div>
+    <a class="lb-map-link" id="lb-map" href="#" target="_blank" rel="noopener" style="display:none">
+      &#128205; View on Maps
+    </a>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  const MONTHS = [
+    "January","February","March","April","May","June",
+    "July","August","September","October","November","December",
+  ];
+
+  let flatList = [];
+  let lbIndex  = -1;
+
+  /* ── Helpers ──────────────────────────────────────────────── */
+  function fmtDate(iso) {
+    if (!iso) return "Unknown date";
+    const d = new Date(iso);
+    if (isNaN(d)) return "Unknown date";
+    const hh = String(d.getHours()).padStart(2, "0");
+    const mm = String(d.getMinutes()).padStart(2, "0");
+    return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()} · ${hh}h${mm}`;
+  }
+
+  function fmtMonthYear(iso) {
+    if (!iso) return "No date";
+    const d = new Date(iso);
+    if (isNaN(d)) return "No date";
+    return `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+  }
+
+  function encPath(p) {
+    return p.split("/").map(encodeURIComponent).join("/");
+  }
+
+  function esc(s) {
+    return String(s)
+      .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  function groupByMonth(media) {
+    const map = new Map();
+    for (const item of media) {
+      const key = fmtMonthYear(item.date);
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(item);
+    }
+    return map;
+  }
+
+  /* ── Render ───────────────────────────────────────────────── */
+  function render(media) {
+    flatList = media;
+    const gallery = document.getElementById("gallery");
+    const groups  = groupByMonth(media);
+    let html = "";
+
+    for (const [month, items] of groups) {
+      html += `
+        <div class="month-group">
+          <div class="month-header">
+            <span class="month-name">${esc(month)}</span>
+            <span class="month-count">${items.length}</span>
+          </div>
+          <div class="thumb-grid">
+      `;
+
+      for (const item of items) {
+        const idx    = flatList.indexOf(item);
+        const hasgps = item.lat != null && item.lng != null;
+        const dot    = hasgps ? `<div class="gps-dot" title="GPS"></div>` : "";
+
+        if (item.type === "photo") {
+          const imgSrc = item.thumb || `/media/${encPath(item.path)}`;
+          html += `
+            <div class="thumb" data-index="${idx}" role="button" tabindex="0" aria-label="${esc(item.filename)}">
+              <img src="${imgSrc}" loading="lazy" alt="" decoding="async" />
+              ${dot}
+            </div>
+          `;
+        } else {
+          html += `
+            <div class="thumb" data-index="${idx}" role="button" tabindex="0" aria-label="Vidéo">
+              <video src="/media/${encPath(item.path)}" preload="none" muted playsinline></video>
+              ${dot}
+              <div class="play-badge">&#9654; video</div>
+            </div>
+          `;
+        }
+      }
+
+      html += `</div></div>`;
+    }
+
+    gallery.innerHTML = html;
+    document.getElementById("loading").style.display = "none";
+    gallery.style.display = "block";
+
+    // Stats
+    const nP = media.filter(m => m.type === "photo").length;
+    const nV = media.filter(m => m.type === "video").length;
+    document.getElementById("nav-stats").textContent =
+      `${nP.toLocaleString("en-US")} photo${nP !== 1 ? "s" : ""} · ${nV.toLocaleString("en-US")} video${nV !== 1 ? "s" : ""}`;
+
+    // Lazy video first-frame via IntersectionObserver
+    const obs = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) { e.target.preload = "metadata"; obs.unobserve(e.target); }
+      }
+    }, { rootMargin: "300px" });
+    gallery.querySelectorAll("video").forEach(v => obs.observe(v));
+
+    // Click / keyboard
+    gallery.addEventListener("click", e => {
+      const t = e.target.closest("[data-index]");
+      if (t) openLb(+t.dataset.index);
+    });
+    gallery.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        const t = e.target.closest("[data-index]");
+        if (t) openLb(+t.dataset.index);
+      }
+    });
+  }
+
+  /* ── Lightbox ─────────────────────────────────────────────── */
+  function openLb(index) {
+    lbIndex = index;
+    showLbItem(index);
+    document.getElementById("lightbox").classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeLb() {
+    document.getElementById("lightbox").classList.remove("open");
+    document.body.style.overflow = "";
+    const v = document.querySelector("#lb-media video");
+    if (v) { v.pause(); v.removeAttribute("src"); v.load(); }
+  }
+
+  function showLbItem(index) {
+    const item = flatList[index];
+    if (!item) return;
+
+    const wrap = document.getElementById("lb-media");
+    const oldV = wrap.querySelector("video");
+    if (oldV) { oldV.pause(); oldV.removeAttribute("src"); oldV.load(); }
+
+    if (item.type === "photo") {
+      wrap.innerHTML = `<img src="/media/${encPath(item.path)}" alt="" />`;
+    } else {
+      wrap.innerHTML = `<video src="/media/${encPath(item.path)}" autoplay muted controls playsinline></video>`;
+    }
+
+    document.getElementById("lb-date").textContent = fmtDate(item.date);
+
+    const mapEl = document.getElementById("lb-map");
+    if (item.lat != null && item.lng != null) {
+      mapEl.href = `https://www.google.com/maps?q=${item.lat},${item.lng}`;
+      mapEl.style.display = "inline-flex";
+    } else {
+      mapEl.style.display = "none";
+    }
+
+    document.getElementById("lb-counter").textContent = `${index + 1} / ${flatList.length}`;
+
+    const prev = document.getElementById("lb-prev");
+    const next = document.getElementById("lb-next");
+    index === 0               ? prev.setAttribute("hidden","") : prev.removeAttribute("hidden");
+    index === flatList.length - 1 ? next.setAttribute("hidden","") : next.removeAttribute("hidden");
+  }
+
+  document.getElementById("lb-close").addEventListener("click", closeLb);
+  document.getElementById("lb-prev").addEventListener("click", () => { if (lbIndex > 0) showLbItem(--lbIndex); });
+  document.getElementById("lb-next").addEventListener("click", () => { if (lbIndex < flatList.length - 1) showLbItem(++lbIndex); });
+
+  document.getElementById("lightbox").addEventListener("click", e => {
+    if (e.target === e.currentTarget) closeLb();
+  });
+
+  document.addEventListener("keydown", e => {
+    const lb = document.getElementById("lightbox");
+    if (!lb.classList.contains("open")) return;
+    if (e.key === "Escape")     closeLb();
+    if (e.key === "ArrowLeft"  && lbIndex > 0)                   showLbItem(--lbIndex);
+    if (e.key === "ArrowRight" && lbIndex < flatList.length - 1) showLbItem(++lbIndex);
+  });
+
+  // Swipe
+  let touchX = 0;
+  document.getElementById("lb-media").addEventListener("touchstart", e => { touchX = e.changedTouches[0].clientX; }, { passive: true });
+  document.getElementById("lb-media").addEventListener("touchend",   e => {
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) < 40) return;
+    if (dx < 0 && lbIndex < flatList.length - 1) showLbItem(++lbIndex);
+    if (dx > 0 && lbIndex > 0)                   showLbItem(--lbIndex);
+  }, { passive: true });
+
+  /* ── Fetch ────────────────────────────────────────────────── */
+  async function loadMedia() {
+    try {
+      const resp = await fetch("/api/media");
+      if (!resp.ok) throw new Error(resp.statusText);
+      const data = await resp.json();
+
+      if (!data.length) {
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("gallery").innerHTML = `
+          <div class="state-center">
+            <div class="state-ghost">
+              <svg viewBox="0 0 100 112" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 4C28 4 15 21 15 42v32l-9 10c-3 9 9 8 22 1 4 14 14 23 22 23s18-9 22-23c13 7 25 8 22-1l-9-10V42C85 21 72 4 50 4z" fill="currentColor"/>
+              </svg>
+            </div>
+            <div class="state-title">No memories</div>
+            <div class="state-sub">Start a download from the main screen to see your memories here.</div>
+            <a class="btn-yellow" href="/">&#8592; Home</a>
+          </div>
+        `;
+        document.getElementById("gallery").style.display = "block";
+        return;
+      }
+
+      render(data);
+    } catch (err) {
+      document.getElementById("loading").innerHTML = `
+        <div class="state-center">
+          <div class="state-title">Loading error</div>
+          <div class="state-sub">${esc(String(err))}</div>
+          <a class="btn-yellow" href="/">&#8592; Back</a>
+        </div>
+      `;
+    }
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  loadMedia();
+})();
+</script>
+</body>
+</html>

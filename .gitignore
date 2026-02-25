@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# PyInstaller build artifacts
+build/
+dist/
+*.spec
+
+# Compiled executable at root
+SnapMemories.exe
+
+# Claude workspace
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
