@@ -1,8 +1,3 @@
-"""
-SnapMemories — Save your Snapchat Memories locally.
-All processing happens on your computer. No data ever leaves your machine.
-"""
-
 import os
 import io
 import json
@@ -24,31 +19,22 @@ import piexif
 from PIL import Image
 from flask import Flask, render_template, request, jsonify, send_from_directory, send_file
 
-# ─────────────────────────────────────────────
-#  Configuration
-# ─────────────────────────────────────────────
-
 PORT = 7842
 MAX_WORKERS = 10
 MAX_RETRIES = 3
-RETRY_BACKOFF = [2, 4, 8]   # seconds between retries
+RETRY_BACKOFF = [2, 4, 8]
 OUTPUT_BASE = Path.home() / "Memories"
 
 app = Flask(__name__)
-app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024 * 1024  # 20 GB
-
-# ─────────────────────────────────────────────
-#  Global session state (one user, one session)
-# ─────────────────────────────────────────────
+app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024 * 1024
 
 session_state = {
-    "step": 0,              # 0=idle, 1=parsed, 2=downloading, 3=done
-    "entries": [],          # parsed memories
+    "step": 0,
+    "entries": [],
     "total_photos": 0,
     "total_videos": 0,
     "estimated_bytes": 0,
     "output_dir": str(OUTPUT_BASE),
-    # download progress
     "downloaded": 0,
     "failed": 0,
     "total": 0,
@@ -60,10 +46,8 @@ session_state = {
     "is_done": False,
     "cancel_flag": False,
     "start_time": None,
-    # bytes downloaded for speed calculation
     "_bytes_downloaded": 0,
     "_bytes_lock": None,
-    # actual bytes written to disk (computed after download completes)
     "used_bytes": 0,
 }
 
@@ -97,18 +81,12 @@ def reset_state():
         })
 
 
-reset_state()  # initialize lock properly
+reset_state()
 
-
-# ─────────────────────────────────────────────
-#  Parsing helpers
-# ─────────────────────────────────────────────
 
 def parse_memories_json(data: bytes) -> list[dict]:
-    """Parse memories_history.json and return a clean list of entries."""
     raw = json.loads(data.decode("utf-8"))
 
-    # Locate the memories array — key name varies across Snapchat export versions
     entries_raw = None
     if isinstance(raw, list):
         entries_raw = raw
@@ -118,7 +96,6 @@ def parse_memories_json(data: bytes) -> list[dict]:
                 entries_raw = raw[key]
                 break
         if entries_raw is None:
-            # Fallback: first list value found in the dict
             for v in raw.values():
                 if isinstance(v, list):
                     entries_raw = v
@@ -141,7 +118,6 @@ def parse_memories_json(data: bytes) -> list[dict]:
         lat = location.get("Latitude") or location.get("latitude")
         lng = location.get("Longitude") or location.get("longitude")
 
-        # Normalise date → datetime
         dt = None
         for fmt in (
             "%Y-%m-%d %H:%M:%S %Z",
@@ -163,7 +139,7 @@ def parse_memories_json(data: bytes) -> list[dict]:
 
         entries.append({
             "date": dt,
-            "media_type": media_type,   # IMAGE or VIDEO
+            "media_type": media_type,
             "download_link": download_link,
             "lat": float(lat) if lat is not None else None,
             "lng": float(lng) if lng is not None else None,
@@ -173,34 +149,23 @@ def parse_memories_json(data: bytes) -> list[dict]:
 
 
 def estimate_size(entries: list[dict]) -> int:
-    """Rough size estimate: 3 MB/photo, 15 MB/video."""
     photos = sum(1 for e in entries if e["media_type"] == "IMAGE")
     videos = sum(1 for e in entries if e["media_type"] == "VIDEO")
     return photos * 3_000_000 + videos * 15_000_000
 
 
-# ─────────────────────────────────────────────
-#  Two-step download
-# ─────────────────────────────────────────────
-
 def resolve_cdn_url(download_link: str, session: requests.Session) -> str:
-    """
-    Step 1: POST to the Snapchat endpoint to get the real CDN URL.
-    The response body IS the URL (plain text or JSON depending on version).
-    """
     resp = session.post(download_link, timeout=30)
     resp.raise_for_status()
 
     content_type = resp.headers.get("Content-Type", "")
     if "json" in content_type:
         data = resp.json()
-        # Try common key names
         for key in ("url", "download_url", "media_url", "Location"):
             if key in data:
                 return data[key]
         raise ValueError(f"Cannot find URL in JSON response: {list(data.keys())}")
 
-    # Plain text response
     url = resp.text.strip()
     if url.startswith("http"):
         return url
@@ -209,7 +174,6 @@ def resolve_cdn_url(download_link: str, session: requests.Session) -> str:
 
 
 def download_file(url: str, session: requests.Session) -> bytes:
-    """Download a file and return its bytes. Updates global speed counter."""
     resp = session.get(url, timeout=60, stream=True)
     resp.raise_for_status()
 
@@ -223,18 +187,13 @@ def download_file(url: str, session: requests.Session) -> bytes:
     return b"".join(chunks)
 
 
-# ─────────────────────────────────────────────
-#  File type detection
-# ─────────────────────────────────────────────
-
 JPEG_MAGIC = b"\xff\xd8\xff"
 PNG_MAGIC  = b"\x89PNG"
-MP4_MAGIC  = b"ftyp"        # bytes 4-8
+MP4_MAGIC  = b"ftyp"
 ZIP_MAGIC  = b"PK\x03\x04"
 
 
 def detect_filetype(data: bytes) -> str:
-    """Return 'jpg', 'mp4', 'zip', or 'unknown'."""
     if data[:3] == JPEG_MAGIC:
         return "jpg"
     if data[:4] == PNG_MAGIC:
@@ -243,25 +202,18 @@ def detect_filetype(data: bytes) -> str:
         return "mp4"
     if data[:4] == ZIP_MAGIC:
         return "zip"
-    return "jpg"  # fallback — treat as JPEG
+    return "jpg"
 
-
-# ─────────────────────────────────────────────
-#  EXIF helpers
-# ─────────────────────────────────────────────
 
 def _deg_to_dms_rational(deg: float):
-    """Convert decimal degrees to EXIF DMS rational tuples."""
     d = int(abs(deg))
     m_float = (abs(deg) - d) * 60
     m = int(m_float)
     s = (m_float - m) * 60
-    # Store as (numerator, denominator)
     return (d, 1), (m, 1), (int(s * 100), 100)
 
 
 def embed_exif_image(data: bytes, dt: datetime, lat=None, lng=None) -> bytes:
-    """Embed EXIF DateTimeOriginal (and GPS if available) into JPEG bytes."""
     try:
         exif_dict = {"0th": {}, "Exif": {}, "GPS": {}, "1st": {}}
 
@@ -282,11 +234,10 @@ def embed_exif_image(data: bytes, dt: datetime, lat=None, lng=None) -> bytes:
         img.save(out, format="JPEG", exif=exif_bytes)
         return out.getvalue()
     except Exception:
-        return data  # if EXIF fails, return original data unchanged
+        return data
 
 
 def write_video_sidecar(path: Path, dt: datetime, lat=None, lng=None):
-    """Write a JSON sidecar for video metadata into a _metadata/ subfolder."""
     meta_dir = path.parent / "_metadata"
     meta_dir.mkdir(exist_ok=True)
     sidecar = meta_dir / (path.name + ".json")
@@ -298,26 +249,17 @@ def write_video_sidecar(path: Path, dt: datetime, lat=None, lng=None):
     sidecar.write_text(json.dumps(meta, indent=2), encoding="utf-8")
 
 
-# ─────────────────────────────────────────────
-#  Overlay merging
-# ─────────────────────────────────────────────
-
 def merge_overlay(base_data: bytes, overlay_zip_data: bytes) -> bytes:
-    """
-    Extract the PNG overlay from a ZIP and composite it onto the base image.
-    Returns the resulting JPEG bytes.
-    """
     try:
         with zipfile.ZipFile(io.BytesIO(overlay_zip_data)) as zf:
             png_names = [n for n in zf.namelist() if n.lower().endswith(".png")]
             if not png_names:
-                return base_data  # no overlay found
+                return base_data
             overlay_data = zf.read(png_names[0])
 
         base_img = Image.open(io.BytesIO(base_data)).convert("RGBA")
         overlay_img = Image.open(io.BytesIO(overlay_data)).convert("RGBA")
 
-        # Resize overlay to match base if needed
         if overlay_img.size != base_img.size:
             overlay_img = overlay_img.resize(base_img.size, Image.LANCZOS)
 
@@ -326,12 +268,8 @@ def merge_overlay(base_data: bytes, overlay_zip_data: bytes) -> bytes:
         merged.save(out, format="JPEG", quality=95)
         return out.getvalue()
     except Exception:
-        return base_data  # silently fall back to original
+        return base_data
 
-
-# ─────────────────────────────────────────────
-#  French month names
-# ─────────────────────────────────────────────
 
 FRENCH_MONTHS = [
     "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
@@ -339,15 +277,7 @@ FRENCH_MONTHS = [
 ]
 
 
-# ─────────────────────────────────────────────
-#  Output path builder
-# ─────────────────────────────────────────────
-
 def build_output_path(output_dir: Path, dt: datetime, ext: str, index: int) -> Path:
-    """
-    Returns: output_dir/YYYY/Month YYYY/YYYY-MM-DD_HH-MM-SS[_N].ext
-    Example: Memories/2025/Février 2025/2025-02-14_18-30-00.jpg
-    """
     month_label = f"{FRENCH_MONTHS[dt.month - 1]} {dt.year}"
     folder = output_dir / str(dt.year) / month_label
     folder.mkdir(parents=True, exist_ok=True)
@@ -358,15 +288,7 @@ def build_output_path(output_dir: Path, dt: datetime, ext: str, index: int) -> P
     return folder / f"{stem}_{index:04d}.{ext}"
 
 
-# ─────────────────────────────────────────────
-#  Single entry download & process
-# ─────────────────────────────────────────────
-
 def process_entry(entry: dict, index: int, output_dir: Path, http: requests.Session) -> dict:
-    """
-    Download + process one memory entry.
-    Returns {"ok": bool, "path": str, "error": str}.
-    """
     dt = entry["date"]
     lat = entry["lat"]
     lng = entry["lng"]
@@ -379,26 +301,13 @@ def process_entry(entry: dict, index: int, output_dir: Path, http: requests.Sess
                     f"{dt.strftime('%Y-%m-%d')} ({media_type.lower()})"
                 )
 
-            # ── Step 1: resolve real CDN URL ──
             cdn_url = resolve_cdn_url(entry["download_link"], http)
-
-            # ── Step 2: detect if the resolved URL itself is an overlay ZIP
-            #    (some endpoints return overlay links directly)
             is_overlay = cdn_url.lower().endswith(".zip")
-
-            # ── Step 3: download the media bytes ──
             media_data = download_file(cdn_url, http)
-
-            # ── Step 4: detect actual file type ──
             ftype = detect_filetype(media_data)
 
             if ftype == "zip":
-                # This is an overlay ZIP — we need the base image
-                # The entry's download_link usually has a companion base image
-                # stored as the same URL without overlay suffix.
-                # Strategy: extract base image from ZIP if present, else skip overlay.
                 overlay_zip = media_data
-                # Try to find a base image sibling URL (Snapchat convention)
                 base_url = cdn_url.replace("_overlay", "").replace("overlay_", "")
                 if base_url != cdn_url:
                     try:
@@ -410,16 +319,12 @@ def process_entry(entry: dict, index: int, output_dir: Path, http: requests.Sess
                         pass
 
                 if ftype == "zip":
-                    # Could not merge — save the ZIP as-is or skip
-                    # We'll save the raw file and note it
                     out_path = build_output_path(output_dir, dt, "zip", index)
                     out_path.write_bytes(media_data)
                     return {"ok": True, "path": str(out_path), "error": ""}
 
-            # ── Step 5: embed metadata ──
             if ftype in ("jpg", "png"):
                 if ftype == "png":
-                    # Convert PNG to JPEG for EXIF support
                     img = Image.open(io.BytesIO(media_data)).convert("RGB")
                     buf = io.BytesIO()
                     img.save(buf, format="JPEG", quality=95)
@@ -427,10 +332,8 @@ def process_entry(entry: dict, index: int, output_dir: Path, http: requests.Sess
                     ftype = "jpg"
                 media_data = embed_exif_image(media_data, dt, lat, lng)
             elif ftype == "mp4":
-                # EXIF not supported in MP4 — sidecar written after save
                 pass
 
-            # ── Step 6: write to disk ──
             out_path = build_output_path(output_dir, dt, ftype, index)
             out_path.write_bytes(media_data)
 
@@ -442,7 +345,6 @@ def process_entry(entry: dict, index: int, output_dir: Path, http: requests.Sess
         except requests.exceptions.HTTPError as e:
             status = e.response.status_code if e.response is not None else 0
             if status in (403, 410) and attempt == 0:
-                # Expired link — no point retrying
                 return {
                     "ok": False,
                     "path": "",
@@ -463,12 +365,7 @@ def process_entry(entry: dict, index: int, output_dir: Path, http: requests.Sess
     return {"ok": False, "path": "", "error": f"{dt.strftime('%Y-%m-%d')}: max retries exceeded"}
 
 
-# ─────────────────────────────────────────────
-#  Main download orchestrator (runs in thread)
-# ─────────────────────────────────────────────
-
 def run_download(entries: list[dict], output_dir: Path, workers: int = MAX_WORKERS):
-    """Background thread: download and process all entries."""
     with _lock:
         session_state["is_running"] = True
         session_state["total"] = len(entries)
@@ -483,7 +380,6 @@ def run_download(entries: list[dict], output_dir: Path, workers: int = MAX_WORKE
     http = requests.Session()
     http.headers.update({"User-Agent": "SnapMemories/1.0"})
 
-    # Speed calculation thread
     def speed_tracker():
         prev_bytes = 0
         while session_state["is_running"]:
@@ -524,7 +420,6 @@ def run_download(entries: list[dict], output_dir: Path, workers: int = MAX_WORKE
                     else:
                         session_state["errors"].append(err)
 
-    # Calculate actual disk usage (exclude _metadata sidecars)
     try:
         used_bytes = sum(
             f.stat().st_size for f in output_dir.rglob("*")
@@ -545,15 +440,10 @@ def run_download(entries: list[dict], output_dir: Path, workers: int = MAX_WORKE
             )
 
 
-# ─────────────────────────────────────────────
-#  Disk space check
-# ─────────────────────────────────────────────
-
 def check_disk_space(output_dir: Path, estimated_bytes: int) -> dict:
-    """Returns {"ok": bool, "free_bytes": int, "needed_bytes": int}."""
     try:
         stat = shutil.disk_usage(output_dir.parent if not output_dir.exists() else output_dir)
-        needed = estimated_bytes * 2  # 2× safety margin
+        needed = estimated_bytes * 2
         return {
             "ok": stat.free >= needed,
             "free_bytes": stat.free,
@@ -563,12 +453,7 @@ def check_disk_space(output_dir: Path, estimated_bytes: int) -> dict:
         return {"ok": True, "free_bytes": -1, "needed_bytes": 0}
 
 
-# ─────────────────────────────────────────────
-#  Media metadata readers (for the viewer)
-# ─────────────────────────────────────────────
-
 def _dms_to_decimal(dms_rational) -> float:
-    """Convert EXIF DMS rational tuples to decimal degrees."""
     d = dms_rational[0][0] / dms_rational[0][1]
     m = dms_rational[1][0] / dms_rational[1][1]
     s = dms_rational[2][0] / dms_rational[2][1]
@@ -576,7 +461,6 @@ def _dms_to_decimal(dms_rational) -> float:
 
 
 def read_jpg_metadata(path: Path) -> dict:
-    """Read EXIF date and GPS coordinates from a JPEG file."""
     try:
         exif_data = piexif.load(str(path))
 
@@ -601,7 +485,6 @@ def read_jpg_metadata(path: Path) -> dict:
 
 
 def read_mp4_metadata(path: Path) -> dict:
-    """Read metadata from the _metadata/ sidecar JSON file."""
     sidecar = path.parent / "_metadata" / (path.name + ".json")
     try:
         meta = json.loads(sidecar.read_text(encoding="utf-8"))
@@ -617,12 +500,7 @@ def read_mp4_metadata(path: Path) -> dict:
         return {"date": None, "lat": None, "lng": None}
 
 
-# ─────────────────────────────────────────────
-#  Thumbnail generator (for /api/media)
-# ─────────────────────────────────────────────
-
 def make_thumbnail(path: Path) -> str | None:
-    """Generate a base64-encoded JPEG thumbnail (max 300×300) for a JPEG file."""
     try:
         img = Image.open(path)
         img.thumbnail((300, 300), Image.LANCZOS)
@@ -633,10 +511,6 @@ def make_thumbnail(path: Path) -> str | None:
         return None
 
 
-# ─────────────────────────────────────────────
-#  Flask routes
-# ─────────────────────────────────────────────
-
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -644,7 +518,6 @@ def index():
 
 @app.route("/api/upload-zip", methods=["POST"])
 def upload_zip():
-    """Receive the Snapchat export ZIP and parse memories_history.json."""
     if "file" not in request.files:
         return jsonify({"error": "No file received."}), 400
 
@@ -656,7 +529,6 @@ def upload_zip():
         zip_bytes = file.read()
 
         with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
-            # Find memories_history.json anywhere in the ZIP
             json_names = [
                 n for n in zf.namelist()
                 if n.endswith("memories_history.json")
@@ -680,7 +552,6 @@ def upload_zip():
         videos = sum(1 for e in entries if e["media_type"] == "VIDEO")
         estimated = estimate_size(entries)
 
-        # Store in session state (convert datetime → ISO string for JSON)
         serialisable = []
         for e in entries:
             serialisable.append({
@@ -714,7 +585,6 @@ def upload_zip():
 
 @app.route("/api/start-download", methods=["POST"])
 def start_download():
-    """Launch the download process in a background thread."""
     with _lock:
         if session_state["is_running"]:
             return jsonify({"error": "Download already in progress."}), 400
@@ -741,13 +611,11 @@ def start_download():
 
 @app.route("/api/progress")
 def progress():
-    """Polling endpoint — return current download state."""
     with _lock:
         total = session_state["total"]
         done = session_state["downloaded"] + session_state["failed"]
         elapsed = session_state["elapsed"] or 0
 
-        # ETA
         if done > 0 and elapsed > 0 and total > done:
             rate = done / elapsed
             eta = (total - done) / rate if rate > 0 else 0
@@ -769,7 +637,7 @@ def progress():
             "elapsed": round(elapsed),
             "eta": round(eta),
             "current_file": session_state["current_file"],
-            "errors": session_state["errors"][:50],  # cap for JSON size
+            "errors": session_state["errors"][:50],
             "has_expired_links": has_expired,
             "output_dir": session_state["output_dir"],
             "used_bytes": session_state["used_bytes"],
@@ -785,7 +653,6 @@ def cancel():
 
 @app.route("/api/open-folder", methods=["POST"])
 def open_folder():
-    """Open the output folder in Windows Explorer."""
     folder = session_state["output_dir"]
     try:
         os.startfile(folder)
@@ -807,14 +674,12 @@ def viewer():
 
 @app.route("/api/media")
 def api_media():
-    """Scan the Memories folder and return a JSON list of all media with metadata."""
     output_dir = Path(session_state["output_dir"])
     if not output_dir.exists():
         return jsonify([])
 
     media_list = []
     for path in sorted(output_dir.rglob("*")):
-        # Skip _metadata folders and non-files
         if not path.is_file():
             continue
         if "_metadata" in path.parts:
@@ -846,19 +711,17 @@ def api_media():
                 "thumb": None,
             })
 
-    # Newest first
     media_list.sort(key=lambda x: x["date"] or "0000", reverse=True)
     return jsonify(media_list)
 
 
 @app.route("/media/<path:filepath>")
 def serve_media(filepath):
-    """Serve a media file from the Memories output folder."""
     output_dir = Path(session_state["output_dir"]).resolve()
     try:
         safe_path = Path(filepath.replace("/", os.sep))
         full_path = (output_dir / safe_path).resolve()
-        full_path.relative_to(output_dir)  # raises ValueError if path escapes
+        full_path.relative_to(output_dir)
     except (ValueError, Exception):
         return "", 403
     if not full_path.is_file():
@@ -866,12 +729,7 @@ def serve_media(filepath):
     return send_file(full_path)
 
 
-# ─────────────────────────────────────────────
-#  Entry point
-# ─────────────────────────────────────────────
-
 def open_browser():
-    """Wait for Flask to start, then open the browser."""
     time.sleep(1.2)
     webbrowser.open(f"http://localhost:{PORT}")
 
