@@ -8,6 +8,12 @@
 
 ---
 
+## Demo
+
+[![Watch the demo](https://img.youtube.com/vi/ccw4OCh8vA8/maxresdefault.jpg)](https://youtu.be/ccw4OCh8vA8)
+
+---
+
 ## Download
 
 **→ [Download SnapMemories.exe](https://github.com/qyrn/snapmemories/releases/latest)**
