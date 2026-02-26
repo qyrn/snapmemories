@@ -9,10 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
-    /* ── Reset ────────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* ── Tokens — Snapchat palette ───────────────────────────── */
     :root {
       --yellow:      #FFFC00;
       --yellow-dim:  rgba(255,252,0,.12);
@@ -33,7 +31,6 @@
       --font:        'Nunito', system-ui, sans-serif;
     }
 
-    /* ── Base ────────────────────────────────────────────────── */
     html { scroll-behavior: smooth; }
 
     body {
@@ -51,7 +48,6 @@
       overflow-x: hidden;
     }
 
-    /* ── Privacy banner ──────────────────────────────────────── */
     .privacy-banner {
       width: 100%;
       background: var(--dark);
@@ -71,7 +67,6 @@
       font-weight: 800;
     }
 
-    /* ── Header ──────────────────────────────────────────────── */
     .header {
       margin-top: 44px;
       text-align: center;
@@ -111,7 +106,6 @@
       line-height: 1.5;
     }
 
-    /* ── Stepper ─────────────────────────────────────────────── */
     .stepper {
       display: flex;
       align-items: flex-start;
@@ -129,7 +123,6 @@
       position: relative;
     }
 
-    /* Connector */
     .step-item::after {
       content: '';
       position: absolute;
@@ -187,7 +180,6 @@
     .step-item.active .step-label { color: var(--text-dim); }
     .step-item.done  .step-label  { color: var(--text-dim); }
 
-    /* ── Card ────────────────────────────────────────────────── */
     .card {
       background: var(--card);
       border-radius: 24px;
@@ -216,7 +208,6 @@
       line-height: 1.6;
     }
 
-    /* ── Guide ───────────────────────────────────────────────── */
     .guide {
       display: flex;
       flex-direction: column;
@@ -281,14 +272,12 @@
     }
     .guide-url:hover { background: var(--card3); }
 
-    /* ── Divider ─────────────────────────────────────────────── */
     .divider {
       height: 1px;
       background: var(--border);
       margin: 28px 0;
     }
 
-    /* ── Drop zone ───────────────────────────────────────────── */
     .dropzone {
       border: 2px dashed var(--border2);
       border-radius: 18px;
@@ -341,7 +330,6 @@
       color: var(--yellow);
     }
 
-    /* ── Summary ─────────────────────────────────────────────── */
     .summary-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -374,7 +362,6 @@
       margin-top: 6px;
     }
 
-    /* ── Disk warning ────────────────────────────────────────── */
     .disk-warning {
       display: none;
       background: rgba(255,149,0,.1);
@@ -389,7 +376,6 @@
     }
     .disk-warning.visible { display: block; }
 
-    /* ── Upload error ────────────────────────────────────────── */
     #upload-error {
       display: none;
       background: rgba(255,75,75,.1);
@@ -403,7 +389,6 @@
       line-height: 1.5;
     }
 
-    /* ── Buttons ─────────────────────────────────────────────── */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -462,7 +447,6 @@
       align-items: center;
     }
 
-    /* ── Story-style progress bar (screen 2) ─────────────────── */
     .story-bar {
       height: 3px;
       background: var(--card3);
@@ -479,7 +463,6 @@
       transition: width .5s ease;
     }
 
-    /* ── Progress section ────────────────────────────────────── */
     .progress-wrap { margin: 0 0 24px; }
 
     .progress-header {
@@ -503,7 +486,6 @@
       letter-spacing: -1px;
     }
 
-    /* ── Stats ───────────────────────────────────────────────── */
     .stats-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -546,7 +528,6 @@
     }
     .current-file span { color: var(--text); }
 
-    /* ── Error section ───────────────────────────────────────── */
     .error-section { display: none; margin-top: 20px; }
     .error-section.visible { display: block; }
 
@@ -577,7 +558,6 @@
       color: var(--red);
     }
 
-    /* ── Expired banner ──────────────────────────────────────── */
     .expired-banner {
       display: none;
       background: rgba(255,149,0,.1);
@@ -595,7 +575,6 @@
     .expired-banner a { color: var(--yellow); font-weight: 700; text-decoration: none; }
     .expired-banner a:hover { text-decoration: underline; }
 
-    /* ── Done screen ─────────────────────────────────────────── */
     .done-hero {
       text-align: center;
       padding: 12px 0 32px;
@@ -688,11 +667,9 @@
       margin-bottom: 6px;
     }
 
-    /* ── Screen visibility ───────────────────────────────────── */
     .screen { display: none; }
     .screen.active { display: block; }
 
-    /* ── Spinner ─────────────────────────────────────────────── */
     @keyframes spin { to { transform: rotate(360deg); } }
     .spinner {
       width: 16px;
@@ -704,7 +681,6 @@
       flex-shrink: 0;
     }
 
-    /* ── Viewer link (screen 1) ──────────────────────────────── */
     .viewer-link {
       display: block;
       margin-top: 14px;
@@ -717,7 +693,6 @@
     }
     .viewer-link:hover { color: var(--text); }
 
-    /* ── Footer ──────────────────────────────────────────────── */
     .site-footer {
       margin-top: 48px;
       width: 100%;
@@ -736,7 +711,6 @@
     }
     .footer-link:hover { color: var(--text); }
 
-    /* ── Responsive ──────────────────────────────────────────── */
     @media (max-width: 520px) {
       body { padding: 0 12px 60px; }
       .card-inner { padding: 20px 16px 24px; }
@@ -760,13 +734,11 @@
 </head>
 <body>
 
-<!-- ── Privacy banner ─────────────────────────────────────────── -->
 <div class="privacy-banner">
   <span>100&nbsp;% local</span>
   &nbsp;— Your files never leave your computer
 </div>
 
-<!-- ── Header ─────────────────────────────────────────────────── -->
 <div class="header">
   <div class="ghost-wrap">
     <img src="{{ url_for('static', filename='favicon.png') }}" alt="SnapMemories" />
@@ -775,7 +747,6 @@
   <div class="app-sub">Save your memories before they're gone</div>
 </div>
 
-<!-- ── Stepper ────────────────────────────────────────────────── -->
 <div class="stepper" id="stepper">
   <div class="step-item active" id="s1">
     <div class="step-circle">1</div>
@@ -795,9 +766,6 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════ -->
-<!--  SCREEN 1                                                    -->
-<!-- ═══════════════════════════════════════════════════════════ -->
 <div class="card screen active" id="screen-1">
   <div class="card-inner">
 
@@ -895,12 +863,8 @@
   </div>
 </div>
 
-<!-- Hidden film-bottom stubs (used by JS) -->
 <div id="fb2" style="display:none"></div>
 
-<!-- ═══════════════════════════════════════════════════════════ -->
-<!--  SCREEN 2                                                    -->
-<!-- ═══════════════════════════════════════════════════════════ -->
 <div class="card screen" id="screen-2">
   <div class="card-inner">
 
@@ -958,12 +922,8 @@
   </div>
 </div>
 
-<!-- Hidden film-bottom stubs (used by JS) -->
 <div id="fb3" style="display:none"></div>
 
-<!-- ═══════════════════════════════════════════════════════════ -->
-<!--  SCREEN 3                                                    -->
-<!-- ═══════════════════════════════════════════════════════════ -->
 <div class="card screen" id="screen-3">
   <div class="card-inner">
 
@@ -1022,16 +982,12 @@
   </div>
 </div>
 
-<!-- ── Footer ─────────────────────────────────────────────────── -->
 <footer class="site-footer">
   SnapMemories &mdash; Free and open source tool.<br>
   Your data never leaves your computer.<br>
   <a class="footer-link" href="https://github.com/qyrn/snapmemories" target="_blank" rel="noopener">Source code on GitHub</a>
 </footer>
 
-<!-- ═══════════════════════════════════════════════════════════ -->
-<!--  JavaScript                                                  -->
-<!-- ═══════════════════════════════════════════════════════════ -->
 <script>
 (function () {
   "use strict";

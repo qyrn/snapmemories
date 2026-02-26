@@ -9,7 +9,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
-    /* ── Tokens ──────────────────────────────────────────────── */
     :root {
       --yellow:      #FFFC00;
       --yellow-glow: rgba(255,252,0,.22);
@@ -40,7 +39,6 @@
       overflow-x: hidden;
     }
 
-    /* ── Navbar — exact Snapchat Memories bar ─────────────────── */
     .navbar {
       position: sticky;
       top: 0;
@@ -109,7 +107,6 @@
       white-space: nowrap;
     }
 
-    /* ── Loading ─────────────────────────────────────────────── */
     .loading {
       display: flex;
       flex-direction: column;
@@ -135,7 +132,6 @@
       color: var(--text-dim);
     }
 
-    /* ── Empty / error ───────────────────────────────────────── */
     .state-center {
       display: flex;
       flex-direction: column;
@@ -200,10 +196,8 @@
     }
     .btn-yellow:hover { transform: scale(1.04); }
 
-    /* ── Gallery ─────────────────────────────────────────────── */
     #gallery { padding-bottom: 60px; }
 
-    /* ── Month group ─────────────────────────────────────────── */
     .month-group { margin-bottom: 0; }
 
     .month-header {
@@ -232,7 +226,6 @@
       color: var(--text-dim);
     }
 
-    /* ── Thumbnail grid — exact Snapchat layout ───────────────── */
     .thumb-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -243,7 +236,6 @@
       .thumb-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
-    /* ── Thumbnail ───────────────────────────────────────────── */
     .thumb {
       aspect-ratio: 1;
       overflow: hidden;
@@ -266,7 +258,6 @@
     .thumb:hover img,
     .thumb:hover video { transform: scale(1.06); }
 
-    /* Dark overlay on hover */
     .thumb::after {
       content: '';
       position: absolute;
@@ -277,7 +268,6 @@
     }
     .thumb:hover::after { background: rgba(0,0,0,.2); }
 
-    /* Video badge — white pill like Snapchat */
     .play-badge {
       position: absolute;
       bottom: 8px;
@@ -295,7 +285,6 @@
       pointer-events: none;
     }
 
-    /* GPS dot — yellow, Snapchat-style */
     .gps-dot {
       position: absolute;
       top: 8px;
@@ -308,7 +297,6 @@
       pointer-events: none;
     }
 
-    /* ── Lightbox ────────────────────────────────────────────── */
     .lightbox {
       position: fixed;
       inset: 0;
@@ -324,7 +312,6 @@
     }
     .lightbox.open { opacity: 1; pointer-events: all; }
 
-    /* Top bar */
     .lb-topbar {
       position: absolute;
       top: 0;
@@ -362,7 +349,6 @@
       color: rgba(255,255,255,.7);
     }
 
-    /* Nav arrows */
     .lb-nav {
       position: absolute;
       top: 50%;
@@ -387,7 +373,6 @@
     .lb-next { right: 12px; }
     .lb-nav[hidden] { display: none; }
 
-    /* Media */
     .lb-media-wrap {
       max-width: min(100vw, 900px);
       max-height: 75vh;
@@ -405,7 +390,6 @@
       border-radius: 4px;
     }
 
-    /* Bottom info bar */
     .lb-bottom {
       position: absolute;
       bottom: 0;
@@ -443,7 +427,6 @@
     }
     .lb-map-link:hover { background: rgba(255,255,255,.22); }
 
-    /* ── Responsive ──────────────────────────────────────────── */
     @media (max-width: 600px) {
       .lb-nav { display: none; }
       .lb-media-wrap { max-height: 65vh; }
@@ -465,7 +448,6 @@
 </head>
 <body>
 
-<!-- ── Navbar ──────────────────────────────────────────────────── -->
 <nav class="navbar">
   <a href="/" class="nav-back">
     &#8592; Back
@@ -481,7 +463,6 @@
   <div class="nav-stats" id="nav-stats"></div>
 </nav>
 
-<!-- ── Content ────────────────────────────────────────────────── -->
 <div id="loading" class="loading">
   <div class="spinner"></div>
   <div class="loading-label">Loading…</div>
@@ -489,7 +470,6 @@
 
 <div id="gallery" style="display:none"></div>
 
-<!-- ── Lightbox ──────────────────────────────────────────────── -->
 <div class="lightbox" id="lightbox" role="dialog" aria-modal="true">
 
   <div class="lb-topbar">
@@ -524,7 +504,6 @@
   let flatList = [];
   let lbIndex  = -1;
 
-  /* ── Helpers ──────────────────────────────────────────────── */
   function fmtDate(iso) {
     if (!iso) return "Unknown date";
     const d = new Date(iso);
@@ -561,7 +540,6 @@
     return map;
   }
 
-  /* ── Render ───────────────────────────────────────────────── */
   function render(media) {
     flatList = media;
     const gallery = document.getElementById("gallery");
@@ -609,13 +587,11 @@
     document.getElementById("loading").style.display = "none";
     gallery.style.display = "block";
 
-    // Stats
     const nP = media.filter(m => m.type === "photo").length;
     const nV = media.filter(m => m.type === "video").length;
     document.getElementById("nav-stats").textContent =
       `${nP.toLocaleString("en-US")} photo${nP !== 1 ? "s" : ""} · ${nV.toLocaleString("en-US")} video${nV !== 1 ? "s" : ""}`;
 
-    // Lazy video first-frame via IntersectionObserver
     const obs = new IntersectionObserver((entries) => {
       for (const e of entries) {
         if (e.isIntersecting) { e.target.preload = "metadata"; obs.unobserve(e.target); }
@@ -623,7 +599,6 @@
     }, { rootMargin: "300px" });
     gallery.querySelectorAll("video").forEach(v => obs.observe(v));
 
-    // Click / keyboard
     gallery.addEventListener("click", e => {
       const t = e.target.closest("[data-index]");
       if (t) openLb(+t.dataset.index);
@@ -636,7 +611,6 @@
     });
   }
 
-  /* ── Lightbox ─────────────────────────────────────────────── */
   function openLb(index) {
     lbIndex = index;
     showLbItem(index);
@@ -699,7 +673,6 @@
     if (e.key === "ArrowRight" && lbIndex < flatList.length - 1) showLbItem(++lbIndex);
   });
 
-  // Swipe
   let touchX = 0;
   document.getElementById("lb-media").addEventListener("touchstart", e => { touchX = e.changedTouches[0].clientX; }, { passive: true });
   document.getElementById("lb-media").addEventListener("touchend",   e => {
@@ -709,7 +682,6 @@
     if (dx > 0 && lbIndex > 0)                   showLbItem(--lbIndex);
   }, { passive: true });
 
-  /* ── Fetch ────────────────────────────────────────────────── */
   async function loadMedia() {
     try {
       const resp = await fetch("/api/media");
