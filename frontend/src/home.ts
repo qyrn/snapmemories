@@ -1,11 +1,11 @@
 import {
   ApiError,
   getJson,
+  type ImportProgress,
+  type ImportSummary,
   keepServerAlive,
   postJson,
   uploadFile,
-  type ImportProgress,
-  type ImportSummary,
 } from "./api.js";
 import { byId, element } from "./dom.js";
 import { formatBytes, formatCount, formatDuration, plural } from "./format.js";

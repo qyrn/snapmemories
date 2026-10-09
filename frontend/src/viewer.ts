@@ -39,7 +39,10 @@ function thumbnail(item: LibraryItem, index: number): HTMLElement {
   const tile = element("button", "thumb");
   tile.type = "button";
   tile.dataset["index"] = String(index);
-  tile.setAttribute("aria-label", `${item.kind === "video" ? "Video" : "Photo"}, ${fullDateLabel(parseLocalMoment(item.taken_at))}`);
+  tile.setAttribute(
+    "aria-label",
+    `${item.kind === "video" ? "Video" : "Photo"}, ${fullDateLabel(parseLocalMoment(item.taken_at))}`,
+  );
 
   if (item.kind === "photo") {
     const image = element("img");
@@ -92,7 +95,7 @@ function render(): void {
   }
   gallery.replaceChildren(fragment);
   gallery.hidden = false;
-  gallery.querySelectorAll("video[data-src]").forEach((video) => videoObserver.observe(video));
+  for (const video of gallery.querySelectorAll("video[data-src]")) videoObserver.observe(video);
 
   const photos = items.filter((item) => item.kind === "photo").length;
   byId("nav-stats").textContent = `${plural(photos, "photo")} · ${plural(items.length - photos, "video")}`;
@@ -178,13 +181,21 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "ArrowRight") step(1);
 });
 
-lightboxMedia.addEventListener("touchstart", (event) => {
-  touchStartX = event.changedTouches[0]?.clientX ?? 0;
-}, { passive: true });
-lightboxMedia.addEventListener("touchend", (event) => {
-  const deltaX = (event.changedTouches[0]?.clientX ?? 0) - touchStartX;
-  if (Math.abs(deltaX) >= SWIPE_THRESHOLD_PX) step(deltaX < 0 ? 1 : -1);
-}, { passive: true });
+lightboxMedia.addEventListener(
+  "touchstart",
+  (event) => {
+    touchStartX = event.changedTouches[0]?.clientX ?? 0;
+  },
+  { passive: true },
+);
+lightboxMedia.addEventListener(
+  "touchend",
+  (event) => {
+    const deltaX = (event.changedTouches[0]?.clientX ?? 0) - touchStartX;
+    if (Math.abs(deltaX) >= SWIPE_THRESHOLD_PX) step(deltaX < 0 ? 1 : -1);
+  },
+  { passive: true },
+);
 
 async function load(): Promise<void> {
   try {
