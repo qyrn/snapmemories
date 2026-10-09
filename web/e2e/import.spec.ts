@@ -51,10 +51,10 @@ async function readOriginPrivateFolder(page: Page): Promise<SavedFile[]> {
   });
 }
 
-async function importInto(page: Page, button: string): Promise<void> {
+async function importInto(page: Page, button: "#btn-folder" | "#btn-zip"): Promise<void> {
   await page.goto("/");
   await page.setInputFiles("#file-input", EXPORT_PATH);
-  await page.getByRole("button", { name: button }).click();
+  await page.locator(button).click();
   await expect(page.locator("#screen-done")).toBeVisible({ timeout: 110_000 });
 }
 
@@ -62,7 +62,7 @@ test("saves into a folder, then skips everything on a second run", async ({ page
   const violations = collectCspViolations(page);
   await useOriginPrivateFolder(page);
 
-  await importInto(page, "Choose where to save");
+  await importInto(page, "#btn-folder");
   const saved = Number(await page.locator("#done-saved").textContent());
   expect(saved).toBeGreaterThan(0);
   await expect(page.locator("#done-failed")).toHaveText("0");
@@ -84,7 +84,7 @@ test("saves into a folder, then skips everything on a second run", async ({ page
     }
   }
 
-  await importInto(page, "Choose where to save");
+  await importInto(page, "#btn-folder");
   await expect(page.locator("#done-saved")).toHaveText("0");
   await expect(page.locator("#done-skipped")).toHaveText(String(saved));
   expect(violations).toEqual([]);
@@ -97,7 +97,7 @@ test("falls back to ZIP downloads when folders are not supported", async ({ page
   });
   const download = page.waitForEvent("download");
 
-  await importInto(page, "Save as ZIP files");
+  await importInto(page, "#btn-zip");
 
   const file = await download;
   expect(file.suggestedFilename()).toBe("Snapchat-Memories-1.zip");
