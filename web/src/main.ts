@@ -7,12 +7,12 @@ import { ImportJob, type JobProgress } from "./import/job";
 import { FolderTarget } from "./output/folderTarget";
 import type { OutputTarget, SavedPart } from "./output/target";
 import { ZipTarget } from "./output/zipTarget";
-import { setupTutorial } from "./tutorial/player";
 import { byId, element, showScreen } from "./ui/dom";
 import { canWriteFolders, pickFolder } from "./ui/fileSystemAccess";
 import { formatBytes, formatCount, formatDate, formatDuration } from "./ui/format";
 import { rememberLanguageChoice, t } from "./ui/i18n";
 import type { MessageKey } from "./ui/strings";
+import { setupTutorialVideo } from "./ui/tutorialVideo";
 
 const ACCEPTED_EXTENSIONS = [".zip", ".json"];
 const ZIP_BASE_NAME = "Snapchat-Memories";
@@ -255,4 +255,4 @@ stopButton.addEventListener("click", () => {
   stopButton.textContent = t("stopping");
 });
 rememberLanguageChoice(byId<HTMLAnchorElement>("language-link"));
-setupTutorial();
+setupTutorialVideo();

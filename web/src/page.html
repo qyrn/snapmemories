@@ -116,8 +116,6 @@
       <path d="M11 4h2v2h-2zm0 4h2v2h-2zm0 4h2v2h-2z" fill="currentColor" />
       <rect x="9" y="15" width="6" height="4" rx="1" fill="#f2542d" />
     </symbol>
-    <symbol id="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor" /></symbol>
-    <symbol id="icon-pause" viewBox="0 0 24 24"><path d="M7 5h4v14H7zm6 0h4v14h-4z" fill="currentColor" /></symbol>
       </defs>
 </svg>
 
@@ -201,39 +199,20 @@
     </div>
     <div class="player" id="player">
       <div class="player-main">
-      <div class="stage" id="stage" aria-hidden="true">
-        <figure class="slide" data-slide data-snapchat data-box="{{boxSnapPage}}"><div class="shot"><img src="/tutorial/{{lang}}/snap-page.jpg" alt="" width="963" height="602" loading="lazy" decoding="async" /><span class="ring"></span><span class="ripple"></span></div></figure>
-        <figure class="slide" data-slide data-snapchat data-box="{{boxSnapToggle}}"><div class="shot"><img src="/tutorial/{{lang}}/snap-toggle.jpg" alt="" width="963" height="602" loading="lazy" decoding="async" /><span class="ring"></span><span class="ripple"></span></div></figure>
-        <figure class="slide" data-slide data-snapchat data-box="{{boxSnapRequest}}"><div class="shot"><img src="/tutorial/{{lang}}/snap-request.jpg" alt="" width="963" height="602" loading="lazy" decoding="async" /><span class="ring"></span><span class="ripple"></span></div></figure>
-        <figure class="slide" data-slide data-snapchat data-box="{{boxSnapExports}}"><div class="shot"><img src="/tutorial/{{lang}}/snap-toggle.jpg" alt="" width="963" height="602" loading="lazy" decoding="async" /><span class="ring"></span><span class="ripple"></span></div></figure>
-        <figure class="slide" data-slide data-snapchat data-box="{{boxSnapDownload}}"><div class="shot"><img src="/tutorial/{{lang}}/snap-download.jpg" alt="" width="963" height="602" loading="lazy" decoding="async" /><span class="ring"></span><span class="ripple"></span></div></figure>
-        <figure class="slide" data-slide data-box="{{boxSiteDrop}}"><div class="shot"><img src="/tutorial/{{lang}}/site-drop.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async" /><span class="ring"></span><span class="ripple"></span></div></figure>
-        <figure class="slide" data-slide data-box="{{boxSiteSummary}}"><div class="shot"><img src="/tutorial/{{lang}}/site-summary.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async" /><span class="ring"></span><span class="ripple"></span></div></figure>
-        <figure class="slide" data-slide data-box="{{boxSiteDone}}"><div class="shot"><img src="/tutorial/{{lang}}/site-done.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async" /><span class="ring"></span><span class="ripple"></span></div></figure>
-      </div>
-      <div class="step-copy">
-        <p class="step-label" id="step-label"></p>
-        <p class="caption" id="caption">{{step1Caption}}</p>
-        <a class="text-link snap-link" id="snap-link" href="https://accounts.snapchat.com/v2/download-my-data" target="_blank" rel="noopener noreferrer">{{openSnapchat}} <span aria-hidden="true">&#8599;</span></a>
-      </div>
-      <div class="controls">
-        <button class="play-button" id="play-button" type="button" aria-label="{{playerPlay}}" data-label-play="{{playerPlay}}" data-label-pause="{{playerPause}}">
-          <svg class="icon-play"><use href="#icon-play" /></svg>
-          <svg class="icon-pause"><use href="#icon-pause" /></svg>
-        </button>
-        <input class="scrubber" id="scrubber" type="range" min="0" max="44" step="0.1" value="0" aria-label="{{playerProgress}}" />
-        <span class="time" id="time">0:00 / 0:44</span>
-      </div>
+        <video class="tutorial-video" id="tutorial-video" controls preload="metadata" playsinline width="1920" height="1080" poster="/video/tutorial-{{lang}}.jpg">
+          <source src="/video/tutorial-{{lang}}.mp4" type="video/mp4" />
+        </video>
+        <a class="text-link snap-link" href="https://accounts.snapchat.com/v2/download-my-data" target="_blank" rel="noopener noreferrer">{{openSnapchat}} <span aria-hidden="true">&#8599;</span></a>
       </div>
       <ol class="chapters" id="chapters">
-        <li><button type="button" data-chapter="0" data-caption="{{step1Caption}}"><span>1</span>{{step1}}</button></li>
-        <li><button type="button" data-chapter="1" data-caption="{{step2Caption}}"><span>2</span>{{step2}}</button></li>
-        <li><button type="button" data-chapter="2" data-caption="{{step3Caption}}"><span>3</span>{{step3}}</button></li>
-        <li><button type="button" data-chapter="3" data-caption="{{step4Caption}}"><span>4</span>{{step4}}</button></li>
-        <li><button type="button" data-chapter="4" data-caption="{{step5Caption}}"><span>5</span>{{step5}}</button></li>
-        <li><button type="button" data-chapter="5" data-caption="{{step6Caption}}"><span>6</span>{{step6}}</button></li>
-        <li><button type="button" data-chapter="6" data-caption="{{step7Caption}}"><span>7</span>{{step7}}</button></li>
-        <li><button type="button" data-chapter="7" data-caption="{{step8Caption}}"><span>8</span>{{step8}}</button></li>
+        <li><button type="button" data-time="3.6"><span>1</span><span class="chapter-copy"><strong>{{step1}}</strong><small>{{step1Caption}}</small></span></button></li>
+        <li><button type="button" data-time="8.6"><span>2</span><span class="chapter-copy"><strong>{{step2}}</strong><small>{{step2Caption}}</small></span></button></li>
+        <li><button type="button" data-time="11.4"><span>3</span><span class="chapter-copy"><strong>{{step3}}</strong><small>{{step3Caption}}</small></span></button></li>
+        <li><button type="button" data-time="15.2"><span>4</span><span class="chapter-copy"><strong>{{step4}}</strong><small>{{step4Caption}}</small></span></button></li>
+        <li><button type="button" data-time="19.4"><span>5</span><span class="chapter-copy"><strong>{{step5}}</strong><small>{{step5Caption}}</small></span></button></li>
+        <li><button type="button" data-time="26.8"><span>6</span><span class="chapter-copy"><strong>{{step6}}</strong><small>{{step6Caption}}</small></span></button></li>
+        <li><button type="button" data-time="31.6"><span>7</span><span class="chapter-copy"><strong>{{step7}}</strong><small>{{step7Caption}}</small></span></button></li>
+        <li><button type="button" data-time="40.6"><span>8</span><span class="chapter-copy"><strong>{{step8}}</strong><small>{{step8Caption}}</small></span></button></li>
       </ol>
     </div>
   </section>

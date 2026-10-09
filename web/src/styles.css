@@ -486,123 +486,25 @@ main > section {
 
 .player {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
+  grid-template-columns: minmax(0, 1fr) 340px;
   gap: 28px;
   align-items: start;
 }
 
-.stage {
-  position: relative;
-  aspect-ratio: 16 / 10;
-  overflow: hidden;
-  container-type: inline-size;
+.tutorial-video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
   border: 2px solid var(--ink);
   border-radius: 20px;
-  background-color: var(--card);
+  background: var(--card);
   box-shadow: 8px 8px 0 var(--ink);
 }
 
-.slide {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  opacity: 0;
-  background: var(--card);
-}
-.shot {
-  position: absolute;
-  inset: 0;
-  transform-origin: center;
-}
-.shot img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.ring {
-  position: absolute;
-  border: 3px solid var(--stamp);
-  border-radius: 8px;
-  box-shadow:
-    0 0 0 4px rgba(242, 84, 45, 0.25),
-    0 0 0 200vmax rgba(27, 26, 23, 0.2);
-  opacity: 0;
-  pointer-events: none;
-}
-.ripple {
-  position: absolute;
-  width: 7cqw;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: var(--stamp);
-  opacity: 0;
-  pointer-events: none;
-}
-
-.step-copy {
-  margin-top: 22px;
-}
-.step-label {
-  color: var(--stamp-deep);
-  font-size: 15px;
-  font-weight: 700;
-}
 .snap-link {
   display: inline-block;
-  margin-top: 10px;
-}
-
-.caption {
-  max-width: 44em;
-  min-height: 2.8em;
-  margin-top: 6px;
-  font-family: var(--display);
-  font-size: clamp(19px, 2vw, 24px);
-  font-weight: 500;
-  line-height: 1.35;
-}
-
-.controls {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-top: 18px;
-}
-.play-button {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 52px;
-  height: 52px;
-  border: 2px solid var(--ink);
-  border-radius: 50%;
-  background: var(--ink);
-  color: var(--card);
-  cursor: pointer;
-}
-.play-button svg {
-  width: 24px;
-  height: 24px;
-}
-.play-button .icon-pause,
-.player.playing .play-button .icon-play {
-  display: none;
-}
-.player.playing .play-button .icon-pause {
-  display: block;
-}
-.scrubber {
-  flex: 1;
-  height: 28px;
-  accent-color: var(--stamp);
-  cursor: pointer;
-}
-.time {
-  color: var(--ink-soft);
-  font-size: 15px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
+  margin-top: 22px;
 }
 
 .chapters {
@@ -612,22 +514,19 @@ main > section {
 }
 .chapters button {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  align-items: flex-start;
+  gap: 12px;
   width: 100%;
-  padding: 8px 14px 8px 8px;
+  padding: 10px 14px 10px 10px;
   border: 2px solid var(--ink);
   border-radius: 14px;
   background: var(--card);
   color: var(--ink);
   font: inherit;
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.3;
   text-align: left;
   cursor: pointer;
 }
-.chapters button span {
+.chapters button > span:first-child {
   flex: none;
   display: grid;
   place-items: center;
@@ -638,11 +537,28 @@ main > section {
   font-size: 13px;
   font-weight: 700;
 }
+.chapter-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.chapter-copy strong {
+  font-size: 15px;
+  line-height: 1.3;
+}
+.chapter-copy small {
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.35;
+}
 .chapters button.active {
   background: var(--ink);
   color: var(--card);
 }
-.chapters button.active span {
+.chapters button.active small {
+  color: var(--paper-deep);
+}
+.chapters button.active > span:first-child {
   background: var(--stamp);
   color: var(--ink);
 }
@@ -1001,15 +917,6 @@ main > section {
   .player {
     grid-template-columns: 1fr;
   }
-  .chapters {
-    flex-direction: row;
-    overflow-x: auto;
-    padding-bottom: 6px;
-  }
-  .chapters button {
-    width: auto;
-    white-space: nowrap;
-  }
   .contact-sheet {
     width: 100%;
     max-width: 520px;
@@ -1053,11 +960,11 @@ main > section {
   .hero-actions .button {
     width: 100%;
   }
-  .stage,
+  .tutorial-video,
   .panel {
     box-shadow: 5px 5px 0 var(--ink);
   }
-  .stage {
+  .tutorial-video {
     border-radius: 14px;
   }
   .stats {

@@ -1,19 +1,12 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-import boxes from "../src/tutorial/boxes.json" with { type: "json" };
 import { FAQ_KEYS, type Language, PAGE_PATHS, STRINGS } from "../src/ui/strings.ts";
 
 export const SITE_URL = "https://memories.qyrn.dev";
 const LANGUAGES: Language[] = ["en", "fr"];
 const OTHER: Record<Language, Language> = { en: "fr", fr: "en" };
 const OG_LOCALES: Record<Language, string> = { en: "en_US", fr: "fr_FR" };
-const UNMEASURED_BOX = "0,0,0,0";
-
-function tutorialBoxes(language: Language): Record<string, string> {
-  const measured: Record<string, number[]> = boxes[language];
-  return Object.fromEntries(Object.entries(measured).map(([key, box]) => [key, box.join(",")]));
-}
 
 function escapeHtml(value: string): string {
   return value
@@ -65,13 +58,11 @@ export function renderPage(template: string, language: Language): string {
     otherPath: PAGE_PATHS[other],
     otherLang: other,
     ogImage: `${SITE_URL}/og-${language}.png`,
-    ...tutorialBoxes(language),
   };
   const filled = template.replace(/\{\{(\w+)\}\}/g, (match, key: string) => {
     if (key === "structuredData") return structuredData(language);
     if (key in variables) return escapeHtml(variables[key] ?? "");
     if (key in strings) return escapeHtml(strings[key as keyof typeof strings]);
-    if (key.startsWith("box")) return UNMEASURED_BOX;
     throw new Error(`Unknown template key ${match}`);
   });
   return filled;
