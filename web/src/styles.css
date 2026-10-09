@@ -352,7 +352,7 @@ h3 {
   animation-delay: 0.5s;
 }
 .print-4 {
-  left: 60cqw;
+  left: 57cqw;
   top: 44cqw;
   z-index: 1;
   width: 38cqw;
@@ -360,7 +360,7 @@ h3 {
   animation-delay: 0.75s;
 }
 .print-5 {
-  left: -2cqw;
+  left: 2cqw;
   top: 56cqw;
   width: 30cqw;
   rotate: -12deg;
@@ -1187,6 +1187,25 @@ main > section {
   .site-footer {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+@media (max-width: 420px) {
+  .stats {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+  .stats > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 16px;
+    text-align: left;
+  }
+  .stats .stat-label {
+    order: -1;
+    margin-top: 0;
   }
 }
 
