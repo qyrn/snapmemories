@@ -11,8 +11,10 @@
     "test": "vitest run",
     "e2e": "playwright test",
     "assets": "node build/render-assets.ts",
-    "video": "node build/render-video.ts",
-    "tutorial-shots": "node build/capture-tutorial.ts"
+    "film": "vite --config vite.film.config.ts",
+    "film-build": "vite build --config vite.film.config.ts",
+    "film-preview": "vite preview --config vite.film.config.ts --port 4174 --strictPort",
+    "film-render": "node build/render-film.ts"
   },
   "dependencies": {
     "@zip.js/zip.js": "^2.23.0"
