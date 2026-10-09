@@ -53,7 +53,8 @@ export const STRINGS = {
     noteLocated: "With a location: {count}",
     noteMissing:
       "Not found in these files: {count}. If Snapchat sent several ZIP files, drop them all together.",
-    noteLinkOnly: "Only available as download links: {count}. Use the Windows app for those.",
+    noteLinkOnly:
+      "Only available as download links: {count}. Request a new export from Snapchat to get them as files.",
     chooseFolder: "Choose where to save",
     chooseFolderHint:
       "Pick or create a folder, for example “Snapchat Memories” in your Pictures. Memories already saved there are skipped.",
@@ -112,9 +113,6 @@ export const STRINGS = {
     faqGalleryA: "Upload the folder you got. The date and place are read automatically.",
     faqResumeQ: "What if it stops halfway?",
     faqResumeA: "Start again with the same folder: memories already saved are skipped.",
-    faqAppQ: "Is there an app?",
-    faqAppA: "Yes, for Windows. It's useful for very old exports that only contain download links.",
-    faqAppLink: "Download the Windows app",
     footerSource: "Open source on GitHub",
     footerMadeBy: "Made by qyrn",
     footerDisclaimer: "SnapMemories is not affiliated with Snap Inc.",
@@ -217,7 +215,8 @@ export const STRINGS = {
     noteLocated: "Avec un lieu : {count}",
     noteMissing:
       "Introuvables dans ces fichiers : {count}. Si Snapchat t'a envoyé plusieurs ZIP, dépose-les tous ensemble.",
-    noteLinkOnly: "Disponibles seulement sous forme de lien : {count}. Utilise l'app Windows pour celles-là.",
+    noteLinkOnly:
+      "Disponibles seulement sous forme de lien : {count}. Demande un nouvel export à Snapchat pour les avoir en fichiers.",
     chooseFolder: "Choisir où enregistrer",
     chooseFolderHint:
       "Choisis ou crée un dossier, par exemple « Souvenirs Snapchat » dans tes Images. Les souvenirs déjà enregistrés dedans sont ignorés.",
@@ -278,10 +277,6 @@ export const STRINGS = {
     faqGalleryA: "Importe le dossier obtenu. La date et le lieu sont lus automatiquement.",
     faqResumeQ: "Et si ça s'arrête en plein milieu ?",
     faqResumeA: "Relance avec le même dossier : les souvenirs déjà enregistrés sont ignorés.",
-    faqAppQ: "Il existe une app ?",
-    faqAppA:
-      "Oui, pour Windows. Elle sert pour les très vieux exports qui ne contiennent que des liens de téléchargement.",
-    faqAppLink: "Télécharger l'app Windows",
     footerSource: "Open source sur GitHub",
     footerMadeBy: "Fait par qyrn",
     footerDisclaimer: "SnapMemories n'est pas affilié à Snap Inc.",
@@ -346,5 +341,4 @@ export const FAQ_KEYS: Array<[MessageKey, MessageKey]> = [
   ["faqPhoneQ", "faqPhoneA"],
   ["faqGalleryQ", "faqGalleryA"],
   ["faqResumeQ", "faqResumeA"],
-  ["faqAppQ", "faqAppA"],
 ];

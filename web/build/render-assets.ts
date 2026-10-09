@@ -8,7 +8,6 @@ import { type Language, STRINGS } from "../src/ui/strings.ts";
 
 const webRoot = path.join(import.meta.dirname, "..");
 const publicDirectory = path.join(webRoot, "public");
-const desktopStatic = path.join(webRoot, "..", "snapmemories", "static");
 const PAPER = "#f3eee3";
 
 function sprite(): string {
@@ -85,10 +84,7 @@ const icoSizes = [16, 32, 48];
 const small = [];
 for (const size of icoSizes)
   small.push({ size, png: await renderIcon(page, FAVICON, size, 0, "transparent") });
-const large = { size: 256, png: await renderIcon(page, LOGO, 256, 0, "transparent") };
 writeFileSync(path.join(publicDirectory, "favicon.ico"), icoFile(small));
-writeFileSync(path.join(desktopStatic, "favicon.ico"), icoFile([...small, large]));
-writeFileSync(path.join(desktopStatic, "favicon.png"), await renderIcon(page, LOGO, 128, 0, "transparent"));
 writeFileSync(
   path.join(publicDirectory, "apple-touch-icon.png"),
   await renderIcon(page, LOGO, 180, 18, PAPER),
