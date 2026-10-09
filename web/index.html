@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SnapMemories: save your Snapchat Memories</title>
+  <meta name="description" content="Get every Snapchat Memory back on your computer with its date and place. Free, nothing to install, nothing leaves your device." />
+  <meta name="theme-color" content="#000000" />
+  <meta property="og:title" content="SnapMemories" />
+  <meta property="og:description" content="Save your Snapchat Memories before they're gone. Free, private, nothing to install." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://memories.qyrn.dev/" />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/favicon.png" />
+  <link rel="preload" href="/fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <script type="module" src="/src/main.ts"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="/">
+    <img src="/favicon.png" alt="" width="32" height="32" />
+    <span>SnapMemories</span>
+  </a>
+  <button class="language-toggle" id="language-toggle" type="button" data-i18n="language">Français</button>
+</header>
+
+<main>
+  <section class="hero">
+    <p class="badge" data-i18n="badge"></p>
+    <h1 data-i18n="heroTitle"></h1>
+    <p class="hero-text" data-i18n="heroText"></p>
+  </section>
+
+  <div class="workspace">
+    <section class="guide" aria-labelledby="guide-title">
+      <h2 id="guide-title" data-i18n="howTitle"></h2>
+      <ol class="steps">
+        <li>
+          <span class="step-number">1</span>
+          <div>
+            <strong data-i18n="step1Title"></strong>
+            <p data-i18n="step1Text"></p>
+            <a class="external-link" href="https://accounts.snapchat.com/accounts/downloadmydata" target="_blank" rel="noopener noreferrer">accounts.snapchat.com &#8599;</a>
+          </div>
+        </li>
+        <li>
+          <span class="step-number">2</span>
+          <div>
+            <strong data-i18n="step2Title"></strong>
+            <p data-i18n="step2Text"></p>
+          </div>
+        </li>
+        <li>
+          <span class="step-number">3</span>
+          <div>
+            <strong data-i18n="step3Title"></strong>
+            <p data-i18n="step3Text"></p>
+          </div>
+        </li>
+        <li>
+          <span class="step-number">4</span>
+          <div>
+            <strong data-i18n="step4Title"></strong>
+            <p data-i18n="step4Text"></p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="panel" id="app" aria-live="polite">
+
+      <div class="screen active" id="screen-drop">
+        <label class="dropzone" id="dropzone">
+          <input type="file" id="file-input" accept=".zip,.json,application/zip" multiple />
+          <svg class="drop-icon" viewBox="0 0 100 112" aria-hidden="true">
+            <path d="M50 4C28 4 15 21 15 42v32l-9 10c-3 9 9 8 22 1 4 14 14 23 22 23s18-9 22-23c13 7 25 8 22-1l-9-10V42C85 21 72 4 50 4z" />
+          </svg>
+          <span class="drop-title" data-i18n="dropTitle"></span>
+          <span class="drop-hint" data-i18n="dropHint"></span>
+        </label>
+        <p class="privacy-line" data-i18n="dropPrivacy"></p>
+        <p class="status-line" id="reading" hidden><span class="spinner"></span><span data-i18n="reading"></span></p>
+        <p class="error-box" id="drop-error" role="alert" hidden></p>
+      </div>
+
+      <div class="screen" id="screen-summary">
+        <ul class="file-list" id="file-list"></ul>
+        <div class="stats">
+          <div><span class="stat-value" id="summary-photos">0</span><span class="stat-label" data-i18n="photos"></span></div>
+          <div><span class="stat-value" id="summary-videos">0</span><span class="stat-label" data-i18n="videos"></span></div>
+          <div><span class="stat-value" id="summary-size">0</span><span class="stat-label" data-i18n="size"></span></div>
+        </div>
+        <ul class="notes" id="summary-notes"></ul>
+        <button class="button primary" id="btn-folder" type="button" data-i18n="chooseFolder"></button>
+        <p class="hint" id="folder-hint" data-i18n="chooseFolderHint"></p>
+        <button class="button primary" id="btn-zip" type="button" data-i18n="downloadZip"></button>
+        <p class="hint" id="zip-hint" data-i18n="downloadZipHint"></p>
+        <p class="error-box" id="summary-error" role="alert" hidden></p>
+        <button class="button ghost" id="btn-reset" type="button" data-i18n="startOver"></button>
+      </div>
+
+      <div class="screen" id="screen-progress">
+        <h2 data-i18n="savingTitle"></h2>
+        <p class="muted" id="progress-text" data-i18n="savingText"></p>
+        <div class="progress-head">
+          <span class="muted" id="progress-label"></span>
+          <span class="percent" id="progress-percent">0%</span>
+        </div>
+        <div class="bar"><div class="bar-fill" id="progress-bar"></div></div>
+        <div class="stats">
+          <div><span class="stat-value" id="progress-saved">0</span><span class="stat-label" data-i18n="saved"></span></div>
+          <div><span class="stat-value" id="progress-failed">0</span><span class="stat-label" data-i18n="failed"></span></div>
+          <div><span class="stat-value" id="progress-eta">-</span><span class="stat-label" data-i18n="remaining"></span></div>
+        </div>
+        <button class="button danger" id="btn-stop" type="button" data-i18n="stop"></button>
+      </div>
+
+      <div class="screen" id="screen-done">
+        <h2 id="done-title"></h2>
+        <p class="muted" id="done-text"></p>
+        <div class="stats">
+          <div><span class="stat-value good" id="done-saved">0</span><span class="stat-label" data-i18n="saved"></span></div>
+          <div><span class="stat-value" id="done-skipped">0</span><span class="stat-label" data-i18n="alreadyThere"></span></div>
+          <div><span class="stat-value bad" id="done-failed">0</span><span class="stat-label" data-i18n="failed"></span></div>
+        </div>
+        <div id="parts" hidden>
+          <h3 data-i18n="partsTitle"></h3>
+          <p class="muted" data-i18n="partsText"></p>
+          <ul class="parts" id="parts-list"></ul>
+        </div>
+        <details class="errors" id="done-errors" hidden>
+          <summary data-i18n="errorsTitle"></summary>
+          <ul id="done-error-list"></ul>
+        </details>
+        <button class="button ghost" id="btn-again" type="button" data-i18n="importAnother"></button>
+      </div>
+
+    </section>
+  </div>
+
+  <section class="faq" aria-labelledby="faq-title">
+    <h2 id="faq-title" data-i18n="faqTitle"></h2>
+    <details>
+      <summary data-i18n="faqSafeTitle"></summary>
+      <p data-i18n="faqSafeText"></p>
+    </details>
+    <details>
+      <summary data-i18n="faqWhatTitle"></summary>
+      <p data-i18n="faqWhatText"></p>
+    </details>
+    <details>
+      <summary data-i18n="faqPhoneTitle"></summary>
+      <p data-i18n="faqPhoneText"></p>
+    </details>
+    <details>
+      <summary data-i18n="faqDesktopTitle"></summary>
+      <p data-i18n="faqDesktopText"></p>
+      <a class="external-link" href="https://github.com/qyrn/snapmemories/releases/latest/download/SnapMemories.exe" data-i18n="desktopLink"></a>
+    </details>
+  </section>
+</main>
+
+<footer class="footer">
+  <a href="https://github.com/qyrn/snapmemories" target="_blank" rel="noopener noreferrer" data-i18n="footerSource"></a>
+  <span data-i18n="footerMadeBy"></span>
+</footer>
+
+</body>
+</html>

@@ -20,3 +20,8 @@ snapmemories/static/js/
 # OS
 .DS_Store
 Thumbs.db
+
+# Web
+web/dist/
+web/test-results/
+web/playwright-report/
