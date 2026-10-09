@@ -70,10 +70,12 @@ Regenerate the icons and share images after changing the logo (`web/build/logo.s
 pnpm --dir web assets
 ```
 
-Render the tutorial as 1080p MP4 files in `web/build/video/` (needs a running `pnpm --dir web preview` and an ffmpeg binary):
+The tutorial video is an animated film rendered frame by frame from `web/film/` (a faithful rebuild of the Snapchat page, the site itself, cursor, camera moves, synthesized sound). Preview it live, then render both languages to `web/public/video/` (needs an ffmpeg binary):
 
 ```bash
-FFMPEG=/path/to/ffmpeg pnpm --dir web video
+pnpm --dir web film                       # live preview on http://localhost:4174/?lang=fr&play
+pnpm --dir web film-build && pnpm --dir web film-preview
+FFMPEG=/path/to/ffmpeg pnpm --dir web film-render
 ```
 
 Desktop app (`snapmemories/` + `frontend/`):
