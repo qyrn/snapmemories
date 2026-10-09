@@ -1,55 +1,46 @@
-export const DURATION_SECONDS = 45;
-export const CHAPTER_STARTS = [0, 8, 14, 21, 29, 37];
+export const SECONDS_PER_STEP = 5.5;
 
 export type Point = [seconds: number, frame: Keyframe];
 
-export interface Track {
-  target: string;
-  points: Point[];
-  easing?: string;
+export interface Box {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
 }
 
-export interface Counter {
-  target: string;
-  from: number;
-  to: number;
-  start: number;
-  end: number;
-  linear?: boolean;
-  format: (value: number) => string;
+const MAX_ZOOM = 1.8;
+const TARGET_WIDTH = 0.72;
+const TARGET_HEIGHT = 0.55;
+
+export function parseBox(value: string): Box | null {
+  const [left, top, right, bottom] = value.split(",").map(Number);
+  if (left === undefined || top === undefined || right === undefined || bottom === undefined) return null;
+  if (right <= left || bottom <= top) return null;
+  return { left, top, right, bottom };
 }
 
-const FADE = 0.45;
-
-export function sceneTrack(scene: number): Track {
-  const start = CHAPTER_STARTS[scene - 1] ?? 0;
-  const end = CHAPTER_STARTS[scene] ?? DURATION_SECONDS;
-  const enter = start === 0 ? 0 : start;
+export function zoomFor(box: Box): { scale: number; transform: string } {
+  const width = (box.right - box.left) / 100;
+  const height = (box.bottom - box.top) / 100;
+  const scale = Math.min(Math.max(Math.min(TARGET_WIDTH / width, TARGET_HEIGHT / height), 1), MAX_ZOOM);
+  const limit = ((scale - 1) / 2) * 100;
+  const clamp = (value: number): number => Math.min(Math.max(value, -limit), limit);
+  const centerX = (box.left + box.right) / 200;
+  const centerY = (box.top + box.bottom) / 200;
+  const shiftX = clamp((0.5 - centerX) * scale * 100);
+  const shiftY = clamp((0.5 - centerY) * scale * 100);
   return {
-    target: `[data-scene="${scene}"]`,
-    points: [
-      [enter, { opacity: start === 0 ? 1 : 0, transform: "scale(0.97)" }],
-      [enter + FADE, { opacity: 1, transform: "scale(1)" }],
-      [end - FADE, { opacity: 1, transform: "scale(1)" }],
-      [end, { opacity: end === DURATION_SECONDS ? 1 : 0, transform: "scale(1.02)" }],
-    ],
+    scale,
+    transform: `translate(${shiftX.toFixed(2)}%, ${shiftY.toFixed(2)}%) scale(${scale.toFixed(3)})`,
   };
 }
 
-export function chapterAt(seconds: number): number {
-  let chapter = 0;
-  CHAPTER_STARTS.forEach((start, index) => {
-    if (seconds >= start) chapter = index;
-  });
-  return chapter;
+export function chapterAt(seconds: number, steps: number): number {
+  return Math.min(Math.floor(seconds / SECONDS_PER_STEP), steps - 1);
 }
 
-export function chapterRestingTime(chapter: number): number {
-  const end = CHAPTER_STARTS[chapter + 1] ?? DURATION_SECONDS;
-  return end - 1;
-}
-
-export function toKeyframes(points: Point[], easing: string): Keyframe[] {
+export function toKeyframes(points: Point[], duration: number, easing: string): Keyframe[] {
   const sorted = [...points].sort((a, b) => a[0] - b[0]);
   const first = sorted[0];
   const last = sorted.at(-1);
@@ -57,17 +48,9 @@ export function toKeyframes(points: Point[], easing: string): Keyframe[] {
   const padded: Point[] = [
     ...(first[0] > 0 ? [[0, first[1]] as Point] : []),
     ...sorted,
-    ...(last[0] < DURATION_SECONDS ? [[DURATION_SECONDS, last[1]] as Point] : []),
+    ...(last[0] < duration ? [[duration, last[1]] as Point] : []),
   ];
-  return padded.map(([seconds, frame]) => ({ ...frame, offset: seconds / DURATION_SECONDS, easing }));
-}
-
-export function counterValue(counter: Counter, seconds: number): number {
-  if (seconds <= counter.start) return counter.from;
-  if (seconds >= counter.end) return counter.to;
-  const progress = (seconds - counter.start) / (counter.end - counter.start);
-  const eased = counter.linear ? progress : 1 - (1 - progress) ** 3;
-  return counter.from + (counter.to - counter.from) * eased;
+  return padded.map(([seconds, frame]) => ({ ...frame, offset: seconds / duration, easing }));
 }
 
 export function formatClock(seconds: number): string {

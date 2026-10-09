@@ -11,7 +11,8 @@
     "test": "vitest run",
     "e2e": "playwright test",
     "assets": "node build/render-assets.ts",
-    "video": "node build/render-video.ts"
+    "video": "node build/render-video.ts",
+    "tutorial-shots": "node build/capture-tutorial.ts"
   },
   "dependencies": {
     "@zip.js/zip.js": "^2.23.0"

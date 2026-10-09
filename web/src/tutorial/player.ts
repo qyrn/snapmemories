@@ -1,63 +1,148 @@
 import { byId } from "../ui/dom";
-import { language } from "../ui/i18n";
-import { buildCounters, buildTracks } from "./script";
+import { t } from "../ui/i18n";
 import {
-  CHAPTER_STARTS,
+  type Box,
   chapterAt,
-  chapterRestingTime,
-  counterValue,
-  DURATION_SECONDS,
   formatClock,
+  type Point,
+  parseBox,
+  SECONDS_PER_STEP,
   toKeyframes,
+  zoomFor,
 } from "./timeline";
 
-const REDUCED_MOTION_CHAPTER_MS = 6500;
-const DEFAULT_EASING = "cubic-bezier(.4,0,.2,1)";
+const EASING = "cubic-bezier(.4,0,.2,1)";
+const FADE = 0.35;
+const RING_BORDER_PX = 3;
+
+interface Slide {
+  element: HTMLElement;
+  shot: HTMLElement;
+  ring: HTMLElement;
+  ripple: HTMLElement;
+  box: Box | null;
+}
+
+function readSlides(stage: HTMLElement): Slide[] {
+  return Array.from(stage.querySelectorAll<HTMLElement>("[data-slide]")).flatMap((element) => {
+    const shot = element.querySelector<HTMLElement>(".shot");
+    const ring = element.querySelector<HTMLElement>(".ring");
+    const ripple = element.querySelector<HTMLElement>(".ripple");
+    if (!shot || !ring || !ripple) return [];
+    return [{ element, shot, ring, ripple, box: parseBox(element.dataset["box"] ?? "") }];
+  });
+}
+
+function placeHighlight(slide: Slide, scale: number): void {
+  const { box, ring, ripple } = slide;
+  if (!box) return;
+  ring.style.left = `${box.left}%`;
+  ring.style.top = `${box.top}%`;
+  ring.style.width = `${box.right - box.left}%`;
+  ring.style.height = `${box.bottom - box.top}%`;
+  ring.style.borderWidth = `${RING_BORDER_PX / scale}px`;
+  ripple.style.left = `${(box.left + box.right) / 2}%`;
+  ripple.style.top = `${(box.top + box.bottom) / 2}%`;
+}
+
+function slideAnimations(slide: Slide, index: number, count: number, duration: number): Animation[] {
+  const start = index * SECONDS_PER_STEP;
+  const end = start + SECONDS_PER_STEP;
+  const zoom = slide.box ? zoomFor(slide.box) : { scale: 1, transform: "none" };
+  placeHighlight(slide, zoom.scale);
+  const tracks: Array<[HTMLElement, Point[]]> = [
+    [
+      slide.element,
+      [
+        [start, { opacity: index === 0 ? 1 : 0 }],
+        [start + FADE, { opacity: 1 }],
+        [end - FADE, { opacity: 1 }],
+        [end, { opacity: index === count - 1 ? 1 : 0 }],
+      ],
+    ],
+    [
+      slide.shot,
+      [
+        [start + 0.7, { transform: "translate(0%, 0%) scale(1)" }],
+        [start + 1.7, { transform: zoom.transform }],
+      ],
+    ],
+  ];
+  if (slide.box) {
+    tracks.push(
+      [
+        slide.ring,
+        [
+          [start + 1.6, { opacity: 0 }],
+          [start + 2, { opacity: 1 }],
+        ],
+      ],
+      [
+        slide.ripple,
+        [
+          [start + 2.2, { opacity: 0, transform: "translate(-50%, -50%) scale(0.2)" }],
+          [start + 2.3, { opacity: 0.8, transform: "translate(-50%, -50%) scale(0.4)" }],
+          [start + 3, { opacity: 0, transform: "translate(-50%, -50%) scale(2.4)" }],
+        ],
+      ],
+    );
+  }
+  return tracks.map(([element, points]) => {
+    const animation = element.animate(toKeyframes(points, duration, EASING), {
+      duration: duration * 1000,
+      fill: "both",
+    });
+    animation.pause();
+    return animation;
+  });
+}
 
 export function setupTutorial(): void {
   const player = byId("player");
   const stage = byId("stage");
   const caption = byId("caption");
+  const stepLabel = byId("step-label");
   const playButton = byId<HTMLButtonElement>("play-button");
   const scrubber = byId<HTMLInputElement>("scrubber");
   const clock = byId("time");
+  const snapLink = byId("snap-link");
   const chapterButtons = Array.from(player.querySelectorAll<HTMLButtonElement>("[data-chapter]"));
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const counters = buildCounters(language()).flatMap((counter) => {
-    const node = stage.querySelector(counter.target);
-    return node ? [{ counter, node }] : [];
-  });
+  const slides = readSlides(stage);
+  const duration = slides.length * SECONDS_PER_STEP;
+  const animations = slides.flatMap((slide, index) => slideAnimations(slide, index, slides.length, duration));
+  scrubber.max = String(duration);
 
-  let animations: Animation[] = [];
   let time = 0;
   let playing = false;
   let pausedByUser = false;
   let lastFrame = 0;
-  let stepTimer = 0;
   let shownChapter = -1;
 
   const seek = (seconds: number): void => {
-    time = Math.min(Math.max(seconds, 0), DURATION_SECONDS);
+    time = Math.min(Math.max(seconds, 0), duration);
     for (const animation of animations) animation.currentTime = time * 1000;
-    for (const { counter, node } of counters) node.textContent = counter.format(counterValue(counter, time));
     scrubber.value = time.toFixed(1);
-    clock.textContent = `${formatClock(time)} / ${formatClock(DURATION_SECONDS)}`;
-    const chapter = chapterAt(time);
-    if (chapter !== shownChapter) {
-      shownChapter = chapter;
-      caption.textContent = chapterButtons[chapter]?.dataset["caption"] ?? "";
-      chapterButtons.forEach((button, index) => {
-        button.classList.toggle("active", index === chapter);
-        button.setAttribute("aria-current", index === chapter ? "step" : "false");
-      });
-    }
+    clock.textContent = `${formatClock(time)} / ${formatClock(duration)}`;
+    const chapter = chapterAt(time, slides.length);
+    if (chapter === shownChapter) return;
+    shownChapter = chapter;
+    const button = chapterButtons[chapter];
+    const title = button?.textContent?.replace(/^\d+/, "") ?? "";
+    stepLabel.textContent = `${t("stepLabel", { n: chapter + 1, total: slides.length })} · ${title}`;
+    caption.textContent = button?.dataset["caption"] ?? "";
+    snapLink.hidden = !slides[chapter]?.element.hasAttribute("data-snapchat");
+    chapterButtons.forEach((item, index) => {
+      item.classList.toggle("active", index === chapter);
+      item.setAttribute("aria-current", index === chapter ? "step" : "false");
+    });
   };
 
   const tick = (now: number): void => {
     if (!playing) return;
-    const elapsed = (now - lastFrame) / 1000;
+    const next = time + (now - lastFrame) / 1000;
     lastFrame = now;
-    seek(time + elapsed >= DURATION_SECONDS ? 0 : time + elapsed);
+    seek(next >= duration ? 0 : next);
     requestAnimationFrame(tick);
   };
 
@@ -65,30 +150,9 @@ export function setupTutorial(): void {
     playing = next;
     player.classList.toggle("playing", next);
     playButton.setAttribute("aria-label", playButton.dataset[next ? "labelPause" : "labelPlay"] ?? "");
-    window.clearInterval(stepTimer);
     if (!next) return;
-    if (reducedMotion) {
-      stepTimer = window.setInterval(() => {
-        seek(chapterRestingTime((chapterAt(time) + 1) % CHAPTER_STARTS.length));
-      }, REDUCED_MOTION_CHAPTER_MS);
-      return;
-    }
     lastFrame = performance.now();
     requestAnimationFrame(tick);
-  };
-
-  const build = (): void => {
-    animations = buildTracks(stage).flatMap((track) => {
-      const node = stage.querySelector(track.target);
-      if (!node) return [];
-      const animation = node.animate(toKeyframes(track.points, track.easing ?? DEFAULT_EASING), {
-        duration: DURATION_SECONDS * 1000,
-        fill: "both",
-      });
-      animation.pause();
-      return [animation];
-    });
-    seek(reducedMotion ? chapterRestingTime(0) : 0);
   };
 
   playButton.addEventListener("click", () => {
@@ -98,11 +162,9 @@ export function setupTutorial(): void {
   scrubber.addEventListener("input", () => seek(Number(scrubber.value)));
   chapterButtons.forEach((button, index) => {
     button.addEventListener("click", () => {
-      seek(reducedMotion ? chapterRestingTime(index) : (CHAPTER_STARTS[index] ?? 0));
-      if (!playing && !reducedMotion) {
-        pausedByUser = false;
-        setPlaying(true);
-      }
+      seek(index * SECONDS_PER_STEP);
+      pausedByUser = false;
+      if (!playing) setPlaying(true);
     });
   });
 
@@ -114,9 +176,6 @@ export function setupTutorial(): void {
     },
     { threshold: 0.5 },
   );
-
-  document.fonts.ready.then(() => {
-    build();
-    observer.observe(stage);
-  });
+  seek(0);
+  observer.observe(stage);
 }

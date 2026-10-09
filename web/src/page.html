@@ -98,12 +98,6 @@
       <path d="m50 66-3-10 9 6zm20 0 3-10-9 6z" fill="#2b2a26" />
       <path d="M76 84c10 0 14-6 12-12" stroke="#2b2a26" stroke-width="5" fill="none" stroke-linecap="round" />
     </symbol>
-    <symbol id="photo-forest" viewBox="0 0 120 120">
-      <rect width="120" height="120" fill="#cfe3c2" />
-      <path d="M18 104 34 54l16 50zm26 0 22-70 22 70zm38 0 16-46 16 46z" fill="#3a6b47" />
-      <path d="M30 104 44 70l14 34zm44 0 12-30 12 30z" fill="#27503a" />
-      <rect y="102" width="120" height="18" fill="#8c6a4b" />
-    </symbol>
     <symbol id="photo-party" viewBox="0 0 120 120">
       <rect width="120" height="120" fill="#2b2a26" />
       <g fill="#f2542d"><circle cx="20" cy="22" r="4" /><circle cx="88" cy="18" r="3" /><circle cx="64" cy="40" r="3" /></g>
@@ -122,15 +116,9 @@
       <path d="M11 4h2v2h-2zm0 4h2v2h-2zm0 4h2v2h-2z" fill="currentColor" />
       <rect x="9" y="15" width="6" height="4" rx="1" fill="#f2542d" />
     </symbol>
-    <symbol id="icon-folder" viewBox="0 0 24 24">
-      <path d="M2 6.5A1.5 1.5 0 0 1 3.5 5H9l2 2h9.5A1.5 1.5 0 0 1 22 8.5v10a1.5 1.5 0 0 1-1.5 1.5h-17A1.5 1.5 0 0 1 2 18.5z" fill="#f2c57c" stroke="currentColor" stroke-width="1.4" />
-    </symbol>
     <symbol id="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor" /></symbol>
     <symbol id="icon-pause" viewBox="0 0 24 24"><path d="M7 5h4v14H7zm6 0h4v14h-4z" fill="currentColor" /></symbol>
-    <symbol id="icon-cursor" viewBox="0 0 24 24">
-      <path d="M5 3l14 8.5-6.2 1.3L9.5 19z" fill="#fbf8f1" stroke="#1b1a17" stroke-width="1.6" stroke-linejoin="round" />
-    </symbol>
-  </defs>
+      </defs>
 </svg>
 
 <a class="skip-link" href="#outil">{{skipLink}}</a>
@@ -212,103 +200,40 @@
       <p>{{tutorialLead}}</p>
     </div>
     <div class="player" id="player">
+      <div class="player-main">
       <div class="stage" id="stage" aria-hidden="true">
-
-        <div class="scene" data-scene="1">
-          <div class="window">
-            <div class="window-bar"><span class="dots"></span><span class="url">accounts.snapchat.com/accounts/downloadmydata</span></div>
-            <div class="window-body form-mock">
-              <p class="mock-title">Download My Data</p>
-              <div class="mock-row"><span>Export your Memories</span><span class="toggle" data-anim="toggle-1"><i data-anim="knob-1"></i></span></div>
-              <div class="mock-row"><span>Export JSON Files</span><span class="toggle" data-anim="toggle-2"><i data-anim="knob-2"></i></span></div>
-              <div class="mock-row"><span>Date range</span><span class="select" data-anim="range">{{sceneAllTime}}</span></div>
-              <span class="mock-button" data-anim="submit">{{sceneSubmit}}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="scene" data-scene="2">
-          <div class="phone">
-            <div class="phone-notch"></div>
-            <div class="mail" data-anim="mail">
-              <span class="mail-icon">@</span>
-              <span class="mail-text"><strong>{{sceneMailFrom}}</strong><span>{{sceneMailSubject}}</span></span>
-            </div>
-            <div class="mail-lines"><span></span><span></span><span></span></div>
-          </div>
-        </div>
-
-        <div class="scene" data-scene="3">
-          <div class="window narrow">
-            <div class="window-bar"><span class="dots"></span><span class="url">{{sceneDownloads}}</span></div>
-            <div class="window-body">
-              <div class="download"><svg><use href="#icon-zip" /></svg><span class="download-name">mydata~1791510669777.zip</span><span class="download-bar"><span data-anim="download-1"></span></span></div>
-              <div class="download"><svg><use href="#icon-zip" /></svg><span class="download-name">mydata~1791510669777-2.zip</span><span class="download-bar"><span data-anim="download-2"></span></span></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="scene" data-scene="4">
-          <div class="window">
-            <div class="window-bar"><span class="dots"></span><span class="url">memories.qyrn.dev</span></div>
-            <div class="window-body drop-mock">
-              <div class="drop-target" data-anim="drop-target"><svg class="drop-mark"><use href="#logo-mark" /></svg><span>{{sceneDropTitle}}</span></div>
-              <div class="mock-stats" data-anim="stats">
-                <span><strong data-counter="photos">0</strong>{{photos}}</span>
-                <span><strong data-counter="videos">0</strong>{{videos}}</span>
-              </div>
-            </div>
-          </div>
-          <svg class="flying-zip zip-a" data-anim="zip-a"><use href="#icon-zip" /></svg>
-          <svg class="flying-zip zip-b" data-anim="zip-b"><use href="#icon-zip" /></svg>
-        </div>
-
-        <div class="scene" data-scene="5">
-          <div class="window">
-            <div class="window-bar"><span class="dots"></span><span class="url">memories.qyrn.dev</span></div>
-            <div class="window-body save-mock">
-              <span class="mock-button primary" data-anim="choose">{{sceneChoose}}</span>
-              <div class="picker" data-anim="picker"><svg><use href="#icon-folder" /></svg><span>{{sceneFolder}}</span></div>
-              <div class="save-progress" data-anim="save">
-                <span class="save-label">{{sceneSaving}} <strong data-counter="percent">0%</strong></span>
-                <span class="download-bar"><span data-anim="save-bar"></span></span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="scene" data-scene="6">
-          <div class="window">
-            <div class="window-bar"><span class="dots"></span><span class="url">{{sceneFolder}} / 2025 / 2025-06</span></div>
-            <div class="window-body result-grid">
-              <figure class="result" data-anim="result-1"><svg><use href="#photo-sunset" /></svg><span class="stamp">'25 6 01</span><svg class="pin"><use href="#icon-pin" /></svg></figure>
-              <figure class="result" data-anim="result-2"><svg><use href="#photo-forest" /></svg><span class="stamp">'25 6 08</span></figure>
-              <figure class="result" data-anim="result-3"><svg><use href="#photo-mountain" /></svg><span class="stamp">'25 6 16</span><svg class="pin"><use href="#icon-pin" /></svg></figure>
-              <figure class="result" data-anim="result-4"><svg><use href="#photo-window" /></svg><span class="stamp">'25 6 23</span></figure>
-              <figure class="result" data-anim="result-5"><svg><use href="#photo-city" /></svg><span class="sticker">wow</span><span class="stamp">'25 6 27</span></figure>
-              <figure class="result" data-anim="result-6"><svg><use href="#photo-party" /></svg><span class="stamp">'25 6 30</span><svg class="pin"><use href="#icon-pin" /></svg></figure>
-            </div>
-          </div>
-        </div>
-
-        <svg class="cursor" data-anim="cursor"><use href="#icon-cursor" /></svg>
+        <figure class="slide" data-slide data-snapchat data-box="{{boxSnapPage}}"><div class="shot"><img src="/tutorial/{{lang}}/snap-page.jpg" alt="" width="963" height="602" loading="lazy" decoding="async" /><span class="ring"></span><span class="ripple"></span></div></figure>
+        <figure class="slide" data-slide data-snapchat data-box="{{boxSnapToggle}}"><div class="shot"><img src="/tutorial/{{lang}}/snap-toggle.jpg" alt="" width="963" height="602" loading="lazy" decoding="async" /><span class="ring"></span><span class="ripple"></span></div></figure>
+        <figure class="slide" data-slide data-snapchat data-box="{{boxSnapRequest}}"><div class="shot"><img src="/tutorial/{{lang}}/snap-request.jpg" alt="" width="963" height="602" loading="lazy" decoding="async" /><span class="ring"></span><span class="ripple"></span></div></figure>
+        <figure class="slide" data-slide data-snapchat data-box="{{boxSnapExports}}"><div class="shot"><img src="/tutorial/{{lang}}/snap-toggle.jpg" alt="" width="963" height="602" loading="lazy" decoding="async" /><span class="ring"></span><span class="ripple"></span></div></figure>
+        <figure class="slide" data-slide data-snapchat data-box="{{boxSnapDownload}}"><div class="shot"><img src="/tutorial/{{lang}}/snap-download.jpg" alt="" width="963" height="602" loading="lazy" decoding="async" /><span class="ring"></span><span class="ripple"></span></div></figure>
+        <figure class="slide" data-slide data-box="{{boxSiteDrop}}"><div class="shot"><img src="/tutorial/{{lang}}/site-drop.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async" /><span class="ring"></span><span class="ripple"></span></div></figure>
+        <figure class="slide" data-slide data-box="{{boxSiteSummary}}"><div class="shot"><img src="/tutorial/{{lang}}/site-summary.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async" /><span class="ring"></span><span class="ripple"></span></div></figure>
+        <figure class="slide" data-slide data-box="{{boxSiteDone}}"><div class="shot"><img src="/tutorial/{{lang}}/site-done.jpg" alt="" width="1280" height="800" loading="lazy" decoding="async" /><span class="ring"></span><span class="ripple"></span></div></figure>
       </div>
-      <p class="caption" id="caption">{{caption1}}</p>
+      <div class="step-copy">
+        <p class="step-label" id="step-label"></p>
+        <p class="caption" id="caption">{{step1Caption}}</p>
+        <a class="text-link snap-link" id="snap-link" href="https://accounts.snapchat.com/v2/download-my-data" target="_blank" rel="noopener noreferrer">{{openSnapchat}} <span aria-hidden="true">&#8599;</span></a>
+      </div>
       <div class="controls">
         <button class="play-button" id="play-button" type="button" aria-label="{{playerPlay}}" data-label-play="{{playerPlay}}" data-label-pause="{{playerPause}}">
           <svg class="icon-play"><use href="#icon-play" /></svg>
           <svg class="icon-pause"><use href="#icon-pause" /></svg>
         </button>
-        <input class="scrubber" id="scrubber" type="range" min="0" max="45" step="0.1" value="0" aria-label="{{playerProgress}}" />
-        <span class="time" id="time">0:00 / 0:45</span>
+        <input class="scrubber" id="scrubber" type="range" min="0" max="44" step="0.1" value="0" aria-label="{{playerProgress}}" />
+        <span class="time" id="time">0:00 / 0:44</span>
+      </div>
       </div>
       <ol class="chapters" id="chapters">
-        <li><button type="button" data-chapter="0" data-caption="{{caption1}}"><span>1</span>{{chapter1}}</button></li>
-        <li><button type="button" data-chapter="1" data-caption="{{caption2}}"><span>2</span>{{chapter2}}</button></li>
-        <li><button type="button" data-chapter="2" data-caption="{{caption3}}"><span>3</span>{{chapter3}}</button></li>
-        <li><button type="button" data-chapter="3" data-caption="{{caption4}}"><span>4</span>{{chapter4}}</button></li>
-        <li><button type="button" data-chapter="4" data-caption="{{caption5}}"><span>5</span>{{chapter5}}</button></li>
-        <li><button type="button" data-chapter="5" data-caption="{{caption6}}"><span>6</span>{{chapter6}}</button></li>
+        <li><button type="button" data-chapter="0" data-caption="{{step1Caption}}"><span>1</span>{{step1}}</button></li>
+        <li><button type="button" data-chapter="1" data-caption="{{step2Caption}}"><span>2</span>{{step2}}</button></li>
+        <li><button type="button" data-chapter="2" data-caption="{{step3Caption}}"><span>3</span>{{step3}}</button></li>
+        <li><button type="button" data-chapter="3" data-caption="{{step4Caption}}"><span>4</span>{{step4}}</button></li>
+        <li><button type="button" data-chapter="4" data-caption="{{step5Caption}}"><span>5</span>{{step5}}</button></li>
+        <li><button type="button" data-chapter="5" data-caption="{{step6Caption}}"><span>6</span>{{step6}}</button></li>
+        <li><button type="button" data-chapter="6" data-caption="{{step7Caption}}"><span>7</span>{{step7}}</button></li>
+        <li><button type="button" data-chapter="7" data-caption="{{step8Caption}}"><span>8</span>{{step8}}</button></li>
       </ol>
     </div>
   </section>
@@ -402,6 +327,7 @@
     <details><summary>{{faqSafeQ}}</summary><p>{{faqSafeA}}</p></details>
     <details><summary>{{faqTimeQ}}</summary><p>{{faqTimeA}}</p></details>
     <details><summary>{{faqPartsQ}}</summary><p>{{faqPartsA}}</p></details>
+    <details><summary>{{faqButtonQ}}</summary><p>{{faqButtonA}}</p></details>
     <details><summary>{{faqPhoneQ}}</summary><p>{{faqPhoneA}}</p></details>
     <details><summary>{{faqGalleryQ}}</summary><p>{{faqGalleryA}}</p></details>
     <details><summary>{{faqResumeQ}}</summary><p>{{faqResumeA}}</p></details>

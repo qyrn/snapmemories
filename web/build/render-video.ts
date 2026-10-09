@@ -5,7 +5,6 @@ import path from "node:path";
 import { chromium } from "@playwright/test";
 
 const FRAME_RATE = 30;
-const DURATION_SECONDS = 45;
 const WIDTH = 1920;
 const HEIGHT = 1080;
 const PAGES = { en: "/", fr: "/fr/" } as const;
@@ -18,12 +17,15 @@ const outputDirectory = path.join(import.meta.dirname, "video");
 mkdirSync(outputDirectory, { recursive: true });
 
 const CAPTURE_STYLE = `
-  body > *:not(main), main > section:not(#tuto), #tuto .section-head, .controls, .chapters { display: none !important; }
+  body > *:not(main), main > section:not(#tuto), #tuto .section-head, .controls, .chapters, .snap-link { display: none !important; }
   body { background: #f3eee3; overflow: hidden; }
   main > section#tuto { padding: 0; border: none; max-width: none; }
-  .player { width: ${WIDTH}px; height: ${HEIGHT}px; max-width: none; padding: 44px 0 0; display: flex; flex-direction: column; align-items: center; }
-  .stage { width: 1376px; flex: none; box-shadow: 10px 10px 0 #1b1a17; }
-  .caption { width: 1376px; max-width: none; margin-top: 30px; font-size: 34px; text-align: center; }
+  .player { display: block; width: ${WIDTH}px; height: ${HEIGHT}px; padding-top: 36px; }
+  .player-main { width: 1376px; margin: 0 auto; }
+  .stage { width: 1376px; box-shadow: 10px 10px 0 #1b1a17; }
+  .step-copy { margin-top: 26px; text-align: center; }
+  .step-label { font-size: 22px; }
+  .caption { max-width: none; min-height: 0; font-size: 32px; }
 `;
 
 function encode(file: string): { write: (frame: Buffer) => Promise<void>; finish: () => Promise<void> } {
@@ -80,6 +82,14 @@ for (const [language, pagePath] of Object.entries(PAGES)) {
   await page.goto(`${baseUrl}${pagePath}`);
   await page.addStyleTag({ content: CAPTURE_STYLE });
   await page.evaluate(() => document.fonts.ready);
+  await page.evaluate(() =>
+    Promise.all(
+      Array.from(document.querySelectorAll<HTMLImageElement>("#stage img"), (image) => {
+        image.loading = "eager";
+        return image.decode().catch(() => undefined);
+      }),
+    ),
+  );
   await page.waitForTimeout(800);
   await page.evaluate(() => {
     const player = document.getElementById("player");
@@ -88,7 +98,10 @@ for (const [language, pagePath] of Object.entries(PAGES)) {
   });
 
   const output = encode(path.join(outputDirectory, `snapmemories-tutorial-${language}.mp4`));
-  const frames = DURATION_SECONDS * FRAME_RATE;
+  const duration = await page.evaluate(() =>
+    Number(document.querySelector<HTMLInputElement>("#scrubber")?.max ?? 0),
+  );
+  const frames = Math.round(duration * FRAME_RATE);
   for (let frame = 0; frame < frames; frame += 1) {
     await page.evaluate((seconds) => {
       const scrubber = document.getElementById("scrubber");
