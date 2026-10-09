@@ -62,6 +62,20 @@ pnpm --dir web typecheck && pnpm --dir web test && pnpm --dir web e2e
 web/node_modules/.bin/biome check .
 ```
 
+The English and French pages are generated at build time from `web/src/page.html` and `web/src/ui/strings.ts`.
+
+Regenerate the icons and share images after changing the logo (`web/build/logo.svg`, `web/public/favicon.svg`):
+
+```bash
+pnpm --dir web assets
+```
+
+Render the tutorial as 1080p MP4 files in `web/build/video/` (needs a running `pnpm --dir web preview` and an ffmpeg binary):
+
+```bash
+FFMPEG=/path/to/ffmpeg pnpm --dir web video
+```
+
 Desktop app (`snapmemories/` + `frontend/`):
 
 ```bash
