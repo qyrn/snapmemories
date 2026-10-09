@@ -85,6 +85,15 @@ body {
   border-radius: 4px;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .sprite {
   position: absolute;
   width: 0;
@@ -111,7 +120,7 @@ body {
 main > section,
 .site-footer {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1320px;
   margin-inline: auto;
   padding-inline: var(--page-gutter);
 }
@@ -427,6 +436,18 @@ main > section {
   max-width: 760px;
   margin-bottom: clamp(28px, 4vw, 44px);
 }
+@media (min-width: 1000px) {
+  .section-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(24px, 4vw, 64px);
+    align-items: end;
+    max-width: none;
+  }
+  .section-head p {
+    margin-top: 0;
+  }
+}
 .section-head p {
   margin-top: 14px;
   font-size: 19px;
@@ -485,10 +506,9 @@ main > section {
 }
 
 .player {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 340px;
-  gap: 28px;
-  align-items: start;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .tutorial-video {
@@ -502,18 +522,30 @@ main > section {
   box-shadow: 8px 8px 0 var(--ink);
 }
 
+.player-main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+}
+.video-frame {
+  width: 100%;
+}
 .snap-link {
   display: inline-block;
-  margin-top: 22px;
 }
 
 .chapters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.chapters li {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
 }
 .chapters button {
   display: flex;
+  flex: 1;
   align-items: flex-start;
   gap: 12px;
   width: 100%;
@@ -563,8 +595,90 @@ main > section {
   color: var(--ink);
 }
 
+.tool-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 380px);
+  gap: clamp(20px, 3vw, 36px);
+  align-items: start;
+}
+
+.tool-steps {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.tool-steps li {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-faint);
+  font-size: 14px;
+  font-weight: 700;
+}
+.tool-steps li span {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--paper-deep);
+  font-size: 12px;
+}
+.tool-steps li.current {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--card);
+}
+.tool-steps li.current span {
+  background: var(--stamp);
+  color: var(--ink);
+}
+
+.prep {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: clamp(18px, 2.5vw, 28px);
+  border: 2px dashed var(--ink-faint);
+  border-radius: 22px;
+}
+.prep h3 {
+  font-size: 22px;
+}
+.prep-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.prep-list li,
+.browser-note {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 15px;
+}
+.prep-list svg,
+.browser-note svg {
+  flex: none;
+  width: 22px;
+  height: 22px;
+}
+.prep-list .text-link {
+  white-space: nowrap;
+}
+.browser-note {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--paper-deep);
+  font-weight: 600;
+}
+
 .panel {
-  max-width: 720px;
   padding: clamp(18px, 3vw, 32px);
   border: 2px solid var(--ink);
   border-radius: 22px;
@@ -820,14 +934,53 @@ main > section {
   color: var(--ink-soft);
 }
 
-.trust h2 {
-  max-width: 14em;
+.how {
+  padding-block: 0 clamp(48px, 7vw, 96px);
 }
+.how-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(14px, 2vw, 24px);
+  counter-reset: none;
+}
+.how-steps li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: clamp(18px, 2.4vw, 28px);
+  border: 2px solid var(--ink);
+  border-radius: 20px;
+  background: var(--card);
+}
+.how-number {
+  position: absolute;
+  top: clamp(16px, 2.2vw, 26px);
+  right: clamp(16px, 2.2vw, 26px);
+  font-family: var(--display);
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--stamp);
+}
+.how-icon {
+  width: 44px;
+  height: 44px;
+  margin-bottom: 6px;
+  color: var(--ink);
+}
+.how-steps h3 {
+  font-size: 22px;
+}
+.how-steps p {
+  flex: 1;
+  color: var(--ink-soft);
+}
+
 .trust-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: clamp(16px, 3vw, 40px);
-  margin-top: 36px;
 }
 .trust-grid article {
   padding-top: 18px;
@@ -840,11 +993,28 @@ main > section {
   color: var(--ink-soft);
 }
 
-.faq h2 {
-  margin-bottom: 24px;
+.faq {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.5fr);
+  gap: clamp(24px, 5vw, 72px);
+  align-items: start;
+}
+.faq-intro {
+  position: sticky;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+}
+.faq-intro p {
+  font-size: 19px;
+  color: var(--ink-soft);
+}
+.faq-list {
+  border-top: 1px solid var(--line);
 }
 .faq details {
-  max-width: 820px;
   border-bottom: 1px solid var(--line);
 }
 .faq summary {
@@ -914,16 +1084,17 @@ main > section {
   .hero {
     grid-template-columns: 1fr;
   }
-  .player {
-    grid-template-columns: 1fr;
+  .tool-layout,
+  .faq {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .faq-intro {
+    position: static;
   }
   .contact-sheet {
     width: 100%;
     max-width: 520px;
     margin-inline: auto;
-  }
-  .trust-grid {
-    grid-template-columns: 1fr;
   }
   .comparison-row {
     grid-template-columns: 1fr;
@@ -954,8 +1125,51 @@ main > section {
   body {
     font-size: 16px;
   }
-  .site-nav a:not(.language-link) {
-    display: none;
+  .site-header {
+    gap: 10px;
+  }
+  .site-nav {
+    gap: 12px;
+    font-size: 14px;
+  }
+  .language-link {
+    padding: 4px 10px;
+  }
+  .brand {
+    gap: 8px;
+  }
+  .brand-mark {
+    width: 34px;
+    height: 34px;
+  }
+  .brand-name {
+    font-size: 19px;
+  }
+  .how-steps,
+  .trust-grid {
+    grid-template-columns: 1fr;
+  }
+  .chapters {
+    display: flex;
+    gap: 10px;
+    margin-inline: calc(var(--page-gutter) * -1);
+    padding: 2px var(--page-gutter) 10px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--page-gutter);
+  }
+  .chapters li {
+    flex: none;
+    width: 78%;
+    scroll-snap-align: start;
+  }
+  .tool-steps {
+    gap: 6px;
+  }
+  .tool-steps li {
+    gap: 6px;
+    padding: 6px;
+    font-size: 13px;
   }
   .hero-actions .button {
     width: 100%;
@@ -973,6 +1187,35 @@ main > section {
   .site-footer {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+@media (max-width: 380px) {
+  .nav-optional {
+    display: none;
+  }
+  .tool-steps li span {
+    display: none;
+  }
+}
+
+@media (min-width: 561px) and (max-width: 1199px) {
+  .chapters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 561px) and (max-width: 900px) {
+  .how-steps {
+    grid-template-columns: 1fr;
+  }
+  .how-steps li {
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    column-gap: 16px;
+  }
+  .how-icon {
+    grid-row: span 3;
   }
 }
 

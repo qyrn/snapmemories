@@ -19,4 +19,8 @@ export function showScreen(id: string): void {
   document.querySelectorAll<HTMLElement>(".screen").forEach((screen) => {
     screen.classList.toggle("active", screen.id === id);
   });
+  document.querySelectorAll<HTMLElement>(".tool-steps [data-step]").forEach((step) => {
+    const steps = (step.dataset["step"] ?? "").split(" ");
+    step.classList.toggle("current", steps.includes(id));
+  });
 }

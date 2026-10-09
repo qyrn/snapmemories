@@ -107,6 +107,18 @@
       <circle cx="60" cy="68" r="14" fill="#f7c59f" />
       <path d="m48 58 12-26 12 26z" fill="#ffd166" />
     </symbol>
+    <symbol id="icon-send" viewBox="0 0 24 24">
+      <path d="M3.5 11.2 20 4l-5.6 16-3.2-6.6z" fill="#fbf8f1" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+      <path d="m11.2 13.4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+    </symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10" fill="#2f7d4f" />
+      <path d="m7.5 12.5 3 3 6-7" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+    </symbol>
+    <symbol id="icon-info" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10" fill="#c93c1a" />
+      <path d="M12 10.5v6M12 7.2v.2" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" />
+    </symbol>
     <symbol id="icon-pin" viewBox="0 0 24 24">
       <path d="M12 22s7-7.2 7-12.5A7 7 0 0 0 5 9.5C5 14.8 12 22 12 22z" fill="#f2542d" />
       <circle cx="12" cy="9.5" r="2.6" fill="#fbf8f1" />
@@ -127,8 +139,8 @@
     <span class="brand-name">Snap<em>Memories</em></span>
   </a>
   <nav class="site-nav">
-    <a href="#tuto">{{navTutorial}}</a>
-    <a href="#faq">{{navFaq}}</a>
+    <a class="nav-optional" href="#tuto">{{navTutorial}}</a>
+    <a class="nav-optional" href="#faq">{{navFaq}}</a>
     <a class="language-link" id="language-link" href="{{otherPath}}" hreflang="{{otherLang}}" lang="{{otherLang}}">{{otherLanguage}}</a>
   </nav>
 </header>
@@ -158,7 +170,34 @@
     </div>
   </section>
 
-  <section class="problem" aria-labelledby="problem-title">
+  <section class="how" aria-labelledby="how-title">
+    <h2 class="visually-hidden" id="how-title">{{howTitle}}</h2>
+    <ol class="how-steps">
+      <li>
+        <span class="how-number">1</span>
+        <svg class="how-icon" aria-hidden="true"><use href="#icon-send" /></svg>
+        <h3>{{how1Title}}</h3>
+        <p>{{how1Text}}</p>
+        <a class="text-link" href="#tuto">{{how1Link}} <span aria-hidden="true">&#8594;</span></a>
+      </li>
+      <li>
+        <span class="how-number">2</span>
+        <svg class="how-icon" aria-hidden="true"><use href="#icon-zip" /></svg>
+        <h3>{{how2Title}}</h3>
+        <p>{{how2Text}}</p>
+        <a class="text-link" href="#outil">{{how2Link}} <span aria-hidden="true">&#8594;</span></a>
+      </li>
+      <li>
+        <span class="how-number">3</span>
+        <svg class="how-icon" aria-hidden="true"><use href="#logo-mark" /></svg>
+        <h3>{{how3Title}}</h3>
+        <p>{{how3Text}}</p>
+        <a class="text-link" href="#difference">{{how3Link}} <span aria-hidden="true">&#8594;</span></a>
+      </li>
+    </ol>
+  </section>
+
+  <section class="problem" id="difference" aria-labelledby="problem-title">
     <div class="section-head">
       <h2 id="problem-title">{{problemTitle}}</h2>
       <p>{{problemLead}}</p>
@@ -199,9 +238,11 @@
     </div>
     <div class="player" id="player">
       <div class="player-main">
-        <video class="tutorial-video" id="tutorial-video" controls preload="metadata" playsinline width="1920" height="1080" poster="/video/tutorial-{{lang}}.jpg">
-          <source src="/video/tutorial-{{lang}}.mp4" type="video/mp4" />
-        </video>
+        <div class="video-frame">
+          <video class="tutorial-video" id="tutorial-video" controls preload="metadata" playsinline width="1920" height="1080" poster="/video/tutorial-{{lang}}.jpg">
+            <source src="/video/tutorial-{{lang}}.mp4" type="video/mp4" />
+          </video>
+        </div>
         <a class="text-link snap-link" href="https://accounts.snapchat.com/v2/download-my-data" target="_blank" rel="noopener noreferrer">{{openSnapchat}} <span aria-hidden="true">&#8599;</span></a>
       </div>
       <ol class="chapters" id="chapters">
@@ -222,7 +263,13 @@
       <h2 id="tool-title">{{toolTitle}}</h2>
       <p>{{toolLead}}</p>
     </div>
+    <div class="tool-layout">
     <div class="panel" id="app" aria-live="polite">
+      <ol class="tool-steps" aria-label="{{toolProgress}}">
+        <li data-step="screen-drop"><span>1</span>{{toolStep1}}</li>
+        <li data-step="screen-summary"><span>2</span>{{toolStep2}}</li>
+        <li data-step="screen-progress screen-done"><span>3</span>{{toolStep3}}</li>
+      </ol>
 
       <div class="screen active" id="screen-drop">
         <label class="dropzone" id="dropzone">
@@ -289,10 +336,24 @@
       </div>
 
     </div>
+    <aside class="prep" aria-labelledby="prep-title">
+      <h3 id="prep-title">{{prepTitle}}</h3>
+      <ul class="prep-list">
+        <li><svg aria-hidden="true"><use href="#icon-check" /></svg><span>{{prep1}} <a class="text-link" href="#tuto">{{prep1Link}}</a></span></li>
+        <li><svg aria-hidden="true"><use href="#icon-check" /></svg><span>{{prep2}}</span></li>
+        <li><svg aria-hidden="true"><use href="#icon-check" /></svg><span>{{prep3}}</span></li>
+      </ul>
+      <p class="browser-note" id="browser-folder" hidden><svg aria-hidden="true"><use href="#icon-check" /></svg><span>{{browserFolder}}</span></p>
+      <p class="browser-note" id="browser-zip" hidden><svg aria-hidden="true"><use href="#icon-info" /></svg><span>{{browserZip}}</span></p>
+    </aside>
+    </div>
   </section>
 
   <section class="trust" aria-labelledby="trust-title">
-    <h2 id="trust-title">{{trustTitle}}</h2>
+    <div class="section-head">
+      <h2 id="trust-title">{{trustTitle}}</h2>
+      <p>{{trustLead}}</p>
+    </div>
     <div class="trust-grid">
       <article><h3>{{trustServerTitle}}</h3><p>{{trustServerText}}</p></article>
       <article><h3>{{trustQualityTitle}}</h3><p>{{trustQualityText}}</p></article>
@@ -301,7 +362,13 @@
   </section>
 
   <section class="faq" id="faq" aria-labelledby="faq-title">
-    <h2 id="faq-title">{{faqTitle}}</h2>
+    <div class="faq-intro">
+      <h2 id="faq-title">{{faqTitle}}</h2>
+      <p>{{faqLead}}</p>
+      <a class="button primary" href="#outil">{{heroCta}}</a>
+      <a class="text-link" href="https://github.com/qyrn/snapmemories/issues" target="_blank" rel="noopener noreferrer">{{faqAsk}} <span aria-hidden="true">&#8599;</span></a>
+    </div>
+    <div class="faq-list">
     <details><summary>{{faqCostQ}}</summary><p>{{faqCostA}}</p></details>
     <details><summary>{{faqSafeQ}}</summary><p>{{faqSafeA}}</p></details>
     <details><summary>{{faqTimeQ}}</summary><p>{{faqTimeA}}</p></details>
@@ -315,6 +382,7 @@
       <p>{{faqAppA}}</p>
       <a class="text-link" href="https://github.com/qyrn/snapmemories/releases/latest/download/SnapMemories.exe">{{faqAppLink}}</a>
     </details>
+    </div>
   </section>
 </main>
 

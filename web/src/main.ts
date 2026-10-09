@@ -255,4 +255,6 @@ stopButton.addEventListener("click", () => {
   stopButton.textContent = t("stopping");
 });
 rememberLanguageChoice(byId<HTMLAnchorElement>("language-link"));
+byId(canWriteFolders() ? "browser-folder" : "browser-zip").hidden = false;
+showScreen("screen-drop");
 setupTutorialVideo();
