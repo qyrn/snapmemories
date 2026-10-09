@@ -32,6 +32,18 @@ function structuredData(language: Language): string {
       browserRequirements: "Requires a modern web browser",
       isAccessibleForFree: true,
       offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
+      author: { "@type": "Person", name: "qyrn", url: "https://github.com/qyrn" },
+    },
+    {
+      "@type": "VideoObject",
+      name: strings.tutorialTitle,
+      description: strings.videoDescription,
+      inLanguage: language,
+      thumbnailUrl: `${SITE_URL}/video/tutorial-${language}.jpg`,
+      contentUrl: `${SITE_URL}/video/tutorial-${language}.mp4`,
+      embedUrl: `${url}#tuto`,
+      uploadDate: "2026-10-09T08:26:50+02:00",
+      duration: "PT51S",
     },
     {
       "@type": "FAQPage",

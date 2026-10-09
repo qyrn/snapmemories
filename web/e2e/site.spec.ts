@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 test("serves a French page with its own metadata", async ({ page }) => {
   await page.goto("/fr/");
   await expect(page.locator("html")).toHaveAttribute("lang", "fr");
-  await expect(page.locator("h1")).toHaveText("Tes Souvenirs Snapchat, rapatriés chez toi.");
+  await expect(page.locator("h1")).toHaveText("Récupère tous tes Souvenirs Snapchat, avec leur vraie date.");
   await expect(page.locator('link[hreflang="en"]')).toHaveAttribute("href", "https://memories.qyrn.dev/");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",
@@ -11,7 +11,7 @@ test("serves a French page with its own metadata", async ({ page }) => {
   );
   const structured = await page.locator('script[type="application/ld+json"]').textContent();
   const graph = JSON.parse(structured ?? "{}")["@graph"] as Array<{ "@type": string }>;
-  expect(graph.map((node) => node["@type"])).toEqual(["WebApplication", "FAQPage"]);
+  expect(graph.map((node) => node["@type"])).toEqual(["WebApplication", "VideoObject", "FAQPage"]);
 });
 
 test("offers the tutorial video with chapters in each language", async ({ page, request }) => {
