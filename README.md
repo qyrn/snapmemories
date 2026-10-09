@@ -2,8 +2,8 @@
 
 **Save all your Snapchat Memories to your computer**, with the original capture date, GPS location and stickers merged in.
 
-[![Download](https://img.shields.io/badge/Download-v2.0.0-FFFC00?style=for-the-badge&labelColor=000000)](https://github.com/qyrn/snapmemories/releases/latest)
-![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS-blue?style=for-the-badge&labelColor=000000)
+[![Open](https://img.shields.io/badge/Open-memories.qyrn.dev-FFFC00?style=for-the-badge&labelColor=000000)](https://memories.qyrn.dev)
+![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20Windows%20%7C%20macOS-blue?style=for-the-badge&labelColor=000000)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge&labelColor=000000)
 
 ---
@@ -14,11 +14,11 @@
 
 ---
 
-## Download
+## Use it
 
-**[Download for Windows](https://github.com/qyrn/snapmemories/releases/latest/download/SnapMemories.exe)** · [macOS build](https://github.com/qyrn/snapmemories/releases/latest/download/SnapMemories-macOS.zip)
+**[memories.qyrn.dev](https://memories.qyrn.dev)**: nothing to install. Your export is read inside your browser and never uploaded. Chrome and Edge on a computer save straight into a folder; other browsers produce ZIP files.
 
-No installation. Double-click and the app opens in your browser.
+Desktop apps, useful for very old exports that only contain download links: [Windows](https://github.com/qyrn/snapmemories/releases/latest/download/SnapMemories.exe) · [macOS](https://github.com/qyrn/snapmemories/releases/latest/download/SnapMemories-macOS.zip)
 
 ---
 
@@ -52,6 +52,17 @@ On macOS the app is not signed yet: right-click `SnapMemories.app`, then **Open*
 ## For developers
 
 Requirements: [uv](https://docs.astral.sh/uv/) and [pnpm](https://pnpm.io/).
+
+Website (`web/`, Vite + TypeScript, deployed on Vercel):
+
+```bash
+pnpm --dir web install
+pnpm --dir web dev
+pnpm --dir web typecheck && pnpm --dir web test && pnpm --dir web e2e
+web/node_modules/.bin/biome check .
+```
+
+Desktop app (`snapmemories/` + `frontend/`):
 
 ```bash
 pnpm --dir frontend install
