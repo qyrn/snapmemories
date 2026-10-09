@@ -1,0 +1,17 @@
+name: Une idée
+description: Un truc qui te manque ou qui pourrait marcher mieux
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: Ton idée
+      description: Ce que tu voudrais que SnapMemories fasse.
+      placeholder: Pouvoir ranger les vidéos dans un dossier à part.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Pourquoi
+      description: Dans quelle situation ça t'aiderait ?

@@ -1,0 +1,28 @@
+name: Un bug
+description: Quelque chose ne marche pas comme prévu
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: Ce qui se passe
+      description: Ce que tu as fait, ce que tu attendais, et ce qui s'est passé à la place.
+      placeholder: J'ai déposé mes 3 ZIP, l'outil m'a dit que 40 souvenirs étaient introuvables.
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Navigateur et système
+      placeholder: Chrome 141 sur Windows 11
+  - type: input
+    id: export
+    attributes:
+      label: Ton export
+      description: Combien de ZIP, et leur taille à peu près.
+      placeholder: 2 ZIP, 4 Go en tout
+  - type: textarea
+    id: more
+    attributes:
+      label: Autre chose ?
+      description: Une capture d'écran aide beaucoup. Pense à masquer ce que tu veux pas montrer, et n'envoie jamais tes ZIP.
