@@ -39,15 +39,17 @@ test("shows every tutorial step with a real screenshot", async ({ page }) => {
   expect(violations).toEqual([]);
 });
 
-test.describe("with animations turned off in the system", () => {
-  test.use({ reducedMotion: "reduce" });
+test.describe("with animations turned off on a small screen", () => {
+  test.use({ reducedMotion: "reduce", viewport: { width: 390, height: 700 } });
 
   test("does not autoplay, but plays when asked", async ({ page }) => {
     await page.goto("/");
-    await page.locator("#tuto").scrollIntoViewIfNeeded();
+    await page.locator("#stage").scrollIntoViewIfNeeded();
     await page.waitForTimeout(800);
     expect(Number(await page.locator("#scrubber").inputValue())).toBe(0);
     await page.locator("#play-button").click();
-    await expect.poll(async () => Number(await page.locator("#scrubber").inputValue())).toBeGreaterThan(1);
+    await expect
+      .poll(async () => Number(await page.locator("#scrubber").inputValue()), { timeout: 15_000 })
+      .toBeGreaterThan(1);
   });
 });

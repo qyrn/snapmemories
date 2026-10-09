@@ -14,6 +14,7 @@ import {
 const EASING = "cubic-bezier(.4,0,.2,1)";
 const FADE = 0.35;
 const RING_BORDER_PX = 3;
+const AUTOPLAY_VISIBILITY = 0.5;
 
 interface Slide {
   element: HTMLElement;
@@ -171,10 +172,11 @@ export function setupTutorial(): void {
   const observer = new IntersectionObserver(
     ([entry]) => {
       if (!entry) return;
-      if (entry.isIntersecting && !playing && !pausedByUser && !reducedMotion) setPlaying(true);
+      const mostlyVisible = entry.intersectionRatio >= AUTOPLAY_VISIBILITY;
+      if (mostlyVisible && !playing && !pausedByUser && !reducedMotion) setPlaying(true);
       if (!entry.isIntersecting && playing) setPlaying(false);
     },
-    { threshold: 0.5 },
+    { threshold: [0, AUTOPLAY_VISIBILITY] },
   );
   seek(0);
   observer.observe(stage);
