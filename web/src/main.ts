@@ -7,10 +7,12 @@ import { ImportJob, type JobProgress } from "./import/job";
 import { FolderTarget } from "./output/folderTarget";
 import type { OutputTarget, SavedPart } from "./output/target";
 import { ZipTarget } from "./output/zipTarget";
+import { setupTutorial } from "./tutorial/player";
 import { byId, element, showScreen } from "./ui/dom";
 import { canWriteFolders, pickFolder } from "./ui/fileSystemAccess";
 import { formatBytes, formatCount, formatDate, formatDuration } from "./ui/format";
-import { isMessageKey, language, type MessageKey, setLanguage, t } from "./ui/i18n";
+import { rememberLanguageChoice, t } from "./ui/i18n";
+import type { MessageKey } from "./ui/strings";
 
 const ACCEPTED_EXTENSIONS = [".zip", ".json"];
 const ZIP_BASE_NAME = "Snapchat-Memories";
@@ -33,16 +35,6 @@ let job: ImportJob | null = null;
 let lastProgress: JobProgress | null = null;
 let partUrls: string[] = [];
 let pendingFrame = 0;
-
-function translatePage(): void {
-  document.documentElement.lang = language();
-  document.title = t("pageTitle");
-  document.querySelector('meta[name="description"]')?.setAttribute("content", t("pageDescription"));
-  document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((node) => {
-    const key = node.dataset["i18n"] ?? "";
-    if (isMessageKey(key)) node.textContent = t(key);
-  });
-}
 
 function showError(target: HTMLElement, message: string): void {
   target.textContent = message;
@@ -234,13 +226,6 @@ async function resetAll(): Promise<void> {
   showScreen("screen-drop");
 }
 
-function rerender(): void {
-  translatePage();
-  if (plan) renderSummary();
-  if (lastProgress?.phase === "running") renderProgress(lastProgress);
-  else if (lastProgress) renderDone(lastProgress);
-}
-
 dropzone.addEventListener("dragover", (event) => {
   event.preventDefault();
   dropzone.classList.add("dragover");
@@ -269,9 +254,5 @@ stopButton.addEventListener("click", () => {
   stopButton.disabled = true;
   stopButton.textContent = t("stopping");
 });
-byId("language-toggle").addEventListener("click", () => {
-  setLanguage(language() === "fr" ? "en" : "fr");
-  rerender();
-});
-
-translatePage();
+rememberLanguageChoice(byId<HTMLAnchorElement>("language-link"));
+setupTutorial();

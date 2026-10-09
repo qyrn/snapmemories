@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://memories.qyrn.dev/sitemap.xml

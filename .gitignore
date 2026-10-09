@@ -7,8 +7,8 @@ __pycache__/
 .pytest_cache/
 
 # PyInstaller
-build/
-dist/
+/build/
+/dist/
 
 # Frontend
 node_modules/
@@ -25,3 +25,6 @@ Thumbs.db
 web/dist/
 web/test-results/
 web/playwright-report/
+web/index.html
+web/fr/
+web/build/video/

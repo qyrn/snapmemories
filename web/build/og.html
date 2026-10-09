@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<style>
+  @font-face { font-family: "Fraunces"; font-weight: 400 800; src: url("../public/fonts/fraunces-latin.woff2") format("woff2"); }
+  @font-face { font-family: "Instrument Sans"; font-weight: 400 700; src: url("../public/fonts/instrument-sans-latin.woff2") format("woff2"); }
+  @font-face { font-family: "DSEG7"; font-weight: 700; src: url("../public/fonts/dseg7-classic-bold.woff2") format("woff2"); }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1200px; height: 630px; overflow: hidden; background: #f3eee3; color: #1b1a17; font-family: "Instrument Sans", sans-serif; }
+  .sprite { position: absolute; width: 0; height: 0; }
+  .frame { position: relative; width: 1200px; height: 630px; padding: 64px 72px; border: 14px solid #1b1a17; }
+  .brand { display: flex; align-items: center; gap: 14px; font-family: "Fraunces", serif; font-size: 34px; font-weight: 600; letter-spacing: -0.02em; }
+  .brand svg { width: 58px; height: 58px; color: #1b1a17; }
+  .brand em { font-style: italic; font-weight: 500; color: #c93c1a; }
+  h1 { margin-top: 56px; width: 600px; font-family: "Fraunces", serif; font-size: 70px; line-height: 1.02; font-weight: 600; letter-spacing: -0.03em; }
+  p { margin-top: 26px; width: 560px; font-size: 25px; font-weight: 600; color: #c93c1a; }
+  .print { position: absolute; width: 270px; padding: 14px 14px 44px; background: #fbf8f1; box-shadow: 0 2px 0 #d6ccb8, 0 18px 36px rgba(27, 26, 23, 0.18); }
+  .print > svg { width: 100%; aspect-ratio: 1; }
+  .stamp { position: absolute; right: 30px; bottom: 58px; font-family: "DSEG7", monospace; font-size: 20px; color: #f2542d; text-shadow: 0 0 8px rgba(242, 84, 45, 0.8); }
+  .a { left: 700px; top: 60px; rotate: -6deg; }
+  .b { left: 880px; top: 120px; rotate: 7deg; }
+  .c { left: 760px; top: 290px; rotate: 3deg; }
+</style>
+</head>
+<body>
+  <div id="sprite"></div>
+  <div class="frame">
+    <div class="brand"><svg><use href="#logo-mark" /></svg><span>Snap<em>Memories</em></span></div>
+    <h1 id="title"></h1>
+    <p id="subtitle"></p>
+    <div class="print a"><svg><use href="#photo-sunset" /></svg><span class="stamp">'25 6 01</span></div>
+    <div class="print b"><svg><use href="#photo-window" /></svg><span class="stamp">'24 11 27</span></div>
+    <div class="print c"><svg><use href="#photo-mountain" /></svg><span class="stamp">'23 2 14</span></div>
+  </div>
+</body>
+</html>

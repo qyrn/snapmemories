@@ -1,0 +1,14 @@
+{
+  "name": "SnapMemories",
+  "short_name": "SnapMemories",
+  "description": "Save your Snapchat Memories with their date, place and stickers.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f3eee3",
+  "theme_color": "#f3eee3",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
