@@ -1,45 +1,22 @@
-# SnapMemories v1.0.0
+## What's new in 2.0
 
-**Save all your Snapchat Memories locally — with dates, GPS, and overlays.**
+- **Current Snapchat exports work.** Photos and videos now come inside the ZIP: SnapMemories reads them directly, no download needed
+- **Split exports.** Drop every ZIP file Snapchat sent at once
+- **GPS fixed.** Locations were never read before. They are now written into photos and videos
+- **No quality loss.** Photos keep their original compression, only the metadata is added
+- **Right time zone.** Dates are converted from UTC to your local time
+- **Video dates.** Capture date and location are written inside the video file
+- **Resume.** Run it again with the same or a newer export: memories already saved are skipped
+- **Faster gallery** with cached thumbnails
+- **Safer.** Other websites can no longer talk to the app running on your computer
+- **macOS build** (unsigned)
 
 ## Download
 
-👉 **[SnapMemories.exe](https://github.com/qyrn/snapmemories/releases/download/v1.0.0/SnapMemories.exe)** — Windows, no installation required
-
----
-
-## What's included
-
-- **Photo & video download** — fetches every memory from your Snapchat export in parallel (10 concurrent connections)
-- **EXIF metadata** — original capture date and GPS coordinates embedded directly into JPEG files
-- **Overlay merging** — text, stickers, and drawing overlays composited onto photos automatically
-- **Smart organization** — files saved to `~/Memories/YYYY/Month YYYY/YYYY-MM-DD_HH-MM-SS.ext`
-- **Built-in viewer** — browse all your saved memories grouped by month, with GPS map links
-- **Expired link detection** — clearly reports links older than 7 days without crashing
-
----
-
-## How to use
-
-1. Go to [accounts.snapchat.com/accounts/downloadmydata](https://accounts.snapchat.com/accounts/downloadmydata)
-2. Check *Export your Memories*, select **JSON** format, and submit
-3. Wait for the confirmation email, then download the ZIP
-4. Open `SnapMemories.exe`, drop the ZIP, and click **Start**
-
-> Links expire 7 days after the export — run SnapMemories as soon as you get the email.
-
----
-
-## Requirements
-
-- Windows 10 or later
-- Internet connection (to download from Snapchat's servers)
-- No Python or any other software needed
-
----
+- Windows: `SnapMemories.exe`
+- macOS: `SnapMemories-macOS.zip` (right-click the app, then Open)
 
 ## Known limitations
 
-- Windows only (macOS / Linux: run from source)
-- MP4 metadata stored as JSON sidecar (`_metadata/` folder) — not embedded in the video container
-- Overlay merging requires the base image to be available; if not found, the raw ZIP is saved instead
+- Stickers on videos are saved as a separate PNG next to the video, not burned into it
+- HEIC photos are copied as-is, without added metadata
