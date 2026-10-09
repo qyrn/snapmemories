@@ -1,27 +1,10 @@
-# Python
-__pycache__/
-*.pyc
-.venv/
-.mypy_cache/
-.ruff_cache/
-.pytest_cache/
-
-# PyInstaller
-/build/
-/dist/
-
-# Frontend
 node_modules/
-snapmemories/static/js/
 
-# Claude workspace
 .claude/
 
-# OS
 .DS_Store
 Thumbs.db
 
-# Web
 web/dist/
 web/test-results/
 web/playwright-report/
