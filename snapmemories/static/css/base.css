@@ -1,0 +1,47 @@
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url("../fonts/nunito-latin.woff2") format("woff2");
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --yellow:      #FFFC00;
+  --yellow-dim:  rgba(255,252,0,.12);
+  --yellow-glow: rgba(255,252,0,.25);
+  --black:       #000000;
+  --dark:        #111111;
+  --card:        #1A1A1A;
+  --card2:       #222222;
+  --card3:       #2A2A2A;
+  --border:      #2E2E2E;
+  --border2:     #3A3A3A;
+  --text:        #FFFFFF;
+  --text-dim:    #8E8E8E;
+  --text-faint:  #4A4A4A;
+  --green:       #00C878;
+  --red:         #FF4B4B;
+  --orange:      #FF9500;
+  --font:        "Nunito", system-ui, sans-serif;
+}
+
+[hidden] { display: none !important; }
+
+ol, ul { list-style: none; }
+
+:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: 2px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}

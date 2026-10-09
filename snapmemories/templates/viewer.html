@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memories · SnapMemories</title>
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+  <link rel="preload" href="{{ url_for('static', filename='fonts/nunito-latin.woff2') }}" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/viewer.css') }}" />
+  <script type="module" src="{{ url_for('static', filename='js/viewer.js') }}"></script>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="/" class="nav-back">&#8592; Back</a>
+  <div class="nav-center">
+    <div class="nav-ghost">
+      <img src="{{ url_for('static', filename='favicon.png') }}" alt="" />
+    </div>
+    <span class="nav-title">Memories</span>
+  </div>
+  <div class="nav-stats" id="nav-stats"></div>
+</nav>
+
+<div id="loading" class="loading">
+  <div class="spinner"></div>
+  <div class="loading-label">Loading</div>
+</div>
+
+<div id="empty" class="state-center" hidden>
+  <div class="state-ghost">
+    <svg viewBox="0 0 100 112" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M50 4C28 4 15 21 15 42v32l-9 10c-3 9 9 8 22 1 4 14 14 23 22 23s18-9 22-23c13 7 25 8 22-1l-9-10V42C85 21 72 4 50 4z" fill="currentColor"/>
+    </svg>
+  </div>
+  <div class="state-title" id="empty-title">No memories yet</div>
+  <div class="state-sub" id="empty-text">Import your Snapchat export from the main screen to see your memories here.</div>
+  <a class="btn-yellow" href="/">&#8592; Home</a>
+</div>
+
+<main id="gallery" hidden></main>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Memory">
+  <div class="lb-topbar">
+    <button class="lb-close" id="lb-close" type="button" aria-label="Close">&#x2715;</button>
+    <span class="lb-counter-top" id="lb-counter"></span>
+    <a class="lb-close" id="lb-download" aria-label="Open original" target="_blank" rel="noopener">&#8599;</a>
+  </div>
+
+  <button class="lb-nav lb-prev" id="lb-prev" type="button" aria-label="Previous">&#8249;</button>
+  <button class="lb-nav lb-next" id="lb-next" type="button" aria-label="Next">&#8250;</button>
+
+  <div class="lb-media-wrap" id="lb-media"></div>
+
+  <div class="lb-bottom">
+    <div class="lb-date" id="lb-date"></div>
+    <a class="lb-map-link" id="lb-map" href="#" target="_blank" rel="noopener noreferrer" hidden>View on map</a>
+  </div>
+</div>
+
+</body>
+</html>

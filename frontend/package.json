@@ -1,0 +1,13 @@
+{
+  "name": "snapmemories-frontend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  },
+  "packageManager": "pnpm@10.33.4"
+}
