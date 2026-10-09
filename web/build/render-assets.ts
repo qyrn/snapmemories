@@ -83,15 +83,22 @@ const page = await browser.newPage({ deviceScaleFactor: 1 });
 
 const icoSizes = [16, 32, 48];
 const small = [];
-for (const size of icoSizes) small.push({ size, png: await renderIcon(page, FAVICON, size, 0, "transparent") });
+for (const size of icoSizes)
+  small.push({ size, png: await renderIcon(page, FAVICON, size, 0, "transparent") });
 const large = { size: 256, png: await renderIcon(page, LOGO, 256, 0, "transparent") };
 writeFileSync(path.join(publicDirectory, "favicon.ico"), icoFile(small));
 writeFileSync(path.join(desktopStatic, "favicon.ico"), icoFile([...small, large]));
 writeFileSync(path.join(desktopStatic, "favicon.png"), await renderIcon(page, LOGO, 128, 0, "transparent"));
-writeFileSync(path.join(publicDirectory, "apple-touch-icon.png"), await renderIcon(page, LOGO, 180, 18, PAPER));
+writeFileSync(
+  path.join(publicDirectory, "apple-touch-icon.png"),
+  await renderIcon(page, LOGO, 180, 18, PAPER),
+);
 writeFileSync(path.join(publicDirectory, "icon-192.png"), await renderIcon(page, LOGO, 192, 16, PAPER));
 writeFileSync(path.join(publicDirectory, "icon-512.png"), await renderIcon(page, LOGO, 512, 40, PAPER));
-writeFileSync(path.join(publicDirectory, "icon-512-maskable.png"), await renderIcon(page, LOGO, 512, 104, PAPER));
+writeFileSync(
+  path.join(publicDirectory, "icon-512-maskable.png"),
+  await renderIcon(page, LOGO, 512, 104, PAPER),
+);
 for (const language of ["en", "fr"] as const) await renderShareImage(page, language);
 
 await browser.close();
